@@ -11,26 +11,64 @@ const copy=[
  ['מסלול נוסף במוח','פרוגסטרון והמוח · 2 מתוך 3','הורמון אחד.\nכמה מסלולים.','אלופרגננולון, תוצר פירוק של פרוגסטרון,\nמווסת קולטני GABA-A המעורבים\nבעיכוב פעילות עצבית.','מנגנון ביולוגי אינו הבטחה לרוגע.','neuro',cream,red],
  ['מחקר, לא הבטחה','פרוגסטרון והמוח · 3 מתוך 3','פוטנציאל\nאינו הבטחה.','הסקירה דנה בהגנה עצבית ובמיאלין —\nהמעטפת המבודדת של סיבי עצב.\nחלק ניכר מהראיות מגיע ממחקרי מעבדה.','אין כאן המלצה לטיפול הורמונלי.','research',sage,ink]
 ];
-function text(id,value,x,y,size,color,font='Assistant',align='right'){return {id,type:'text',text:value,x,y,size,color,font,align,opacity:1,animation:'fade'};}
-function art(id,shape,x,y,size,color,opacity=1){return {id,type:'art',shape,text:shape,x,y,size,color,font:'Heebo',align:'center',opacity,animation:'breathe'};}
+export const photoSuggestions=['גב וכתף באור חם','ידיים במנוחה','כתף באור שמש','רגע של מנוחה','עור, אור וצל','מגע עדין','גב באור וצל','ידיים ומרקם טבעי','כתף ובד טבעי'];
+function text(id,value,x,y,size,color,font='Assistant',align='right'){
+ return {id,type:'text',text:value,x,y,size,color,font,align,opacity:1,animation:'fade'};
+}
+function panel(id,x,y,width,height,color,opacity=1){return {id,type:'rect',label:'משטח צבע',x,y,width,height,color,opacity,animation:'none'};}
+function photograph(index,x,y,width,height){return {id:1,type:'photo',label:photoSuggestions[index],src:null,x,y,width,height,zoom:1,focusX:50,focusY:50,opacity:1,tint:0,tintColor:cream,animation:'zoom',placeholderText:'התצלום שלך כאן',placeholderColor:index%3===0?ink:sage,placeholderInk:index%3===0?cream:ink,placeholderY:index%3===0?.77:.5};}
 export const templates=copy.map(([name,tag,title,body,cta,scene,bg,fg],i)=>({name,tag,text:title,bg,ink:fg,accent:fg,scene,index:i}));
 export function createStory(index=0){
  const [name,tag,title,body,cta,scene,bg,fg]=copy[index];
- const contrasting=bg===red?cream:bg===ink?sage:red;
- return {version:2,title:name,scene,bg,accent:contrasting,photo:null,overlay:25,elements:[
- art(1,'halo',540,1000,800,contrasting,.18),
- art(2,index<3?'drapery':index<6?'orbit':'synapse',540,1000,740,contrasting,.65),
- art(3,index===2?'women':index===3?'seated':index===7?'profile':'woman',540,1000,700,bg===red?ink:bg===ink?red:ink),
- art(4,'moon',index%2?210:840,770,125,bg===ink?cream:red,.9),
- text(5,'rona',930,145,62,fg,'Heebo'),
- text(6,tag,930,250,28,fg),
- text(7,title,930,450,index===1?91:100,fg,'Heebo'),
- text(8,body,930,1460,40,fg),
- art(9,'rule',540,1640,780,fg,.5),
- text(10,cta,930,1710,31,fg,'Assistant'),
- text(11,index>=6?'Schumacher et al. · 2012 | doi: 10.3389/fnins.2012.00010':index>=3?'מידע כללי · אינו תחליף לייעוץ רפואי':'מרחב לשיחה על הגוף, התרבות והבחירה',930,1800,index>=6?23:26,fg),
- text(12,String(index+1).padStart(2,'0')+' / 09',150,150,25,fg,'Assistant','left')
- ]};
+ const layout=index%3;
+ const s={version:3,title:name,scene,bg,accent:fg,photo:null,overlay:0,duration:8,motion:1,elements:[]};
+ // Three editorial compositions recur across the three research series.
+ // Image frames, color fields, rules, and every word are independent layers.
+ if(layout===0){
+  s.elements=[photograph(index,540,645,1080,1290),panel(2,540,1605,1080,630,bg),panel(3,540,285,1080,570,bg,.24),
+   text(5,'rona',940,155,64,cream,'Heebo'),text(6,tag,940,260,30,cream),
+   text(7,title,940,470,99,cream,'Heebo'),text(8,body,940,1440,42,fg),
+   panel(9,540,1602,800,2,fg,.45),text(10,cta,940,1670,31,fg),
+   text(11,index>=6?'Schumacher et al. · 2012 | doi: 10.3389/fnins.2012.00010':index>=3?'מידע כללי · אינו תחליף לייעוץ רפואי':'מרחב לשיחה על הגוף, התרבות והבחירה',940,1785,index>=6?23:26,fg),
+   text(12,String(index+1).padStart(2,'0')+' / 09',140,155,27,cream,'Assistant','left')];
+ }else if(layout===1){
+  s.elements=[photograph(index,540,950,1080,1920),panel(2,540,370,1080,740,bg,.96),panel(3,540,1590,1080,660,bg,.96),
+   text(5,'rona',940,150,64,fg,'Heebo'),text(6,tag,940,265,30,fg),
+   text(7,title,940,475,96,fg,'Heebo'),text(8,body,940,1415,41,fg),
+   panel(9,540,1595,800,2,fg,.45),text(10,cta,940,1675,30,fg),
+   text(11,index>=6?'Schumacher et al. · 2012 | doi: 10.3389/fnins.2012.00010':index>=3?'מידע כללי · אינו תחליף לייעוץ רפואי':'מרחב לשיחה על הגוף, התרבות והבחירה',940,1785,index>=6?23:26,fg),
+   text(12,String(index+1).padStart(2,'0')+' / 09',140,150,27,fg,'Assistant','left')];
+ }else{
+  s.elements=[photograph(index,500,925,920,710),panel(2,1010,925,140,710,red),
+   text(5,'rona',940,150,64,fg,'Heebo'),text(6,tag,940,255,30,fg),
+   text(7,title,940,435,94,fg,'Heebo'),text(8,body,940,1435,41,fg),
+   panel(9,540,1595,800,2,fg,.45),text(10,cta,940,1670,30,fg),
+   text(11,index>=6?'Schumacher et al. · 2012 | doi: 10.3389/fnins.2012.00010':index>=3?'מידע כללי · אינו תחליף לייעוץ רפואי':'מרחב לשיחה על הגוף, התרבות והבחירה',940,1785,index>=6?23:26,fg),
+   text(12,String(index+1).padStart(2,'0')+' / 09',140,150,27,fg,'Assistant','left')];
+ }
+ return s;
 }
-export const shapes=['halo','drapery','orbit','synapse','woman','women','seated','profile','moon','rule'];
-export function validStory(s){return !!s&&/^#[\da-f]{6}$/i.test(s.bg)&&/^#[\da-f]{6}$/i.test(s.accent)&&Number.isFinite(s.overlay)&&s.overlay>=0&&s.overlay<=80&&(s.photo===null||typeof s.photo==='string'&&s.photo.startsWith('data:image/'))&&Array.isArray(s.elements)&&s.elements.length<100&&new Set(s.elements.map(e=>e.id)).size===s.elements.length&&s.elements.every(e=>Number.isFinite(e.id)&&typeof e.text==='string'&&e.text.length<=2000&&Number.isFinite(e.x)&&Number.isFinite(e.y)&&Number.isFinite(e.size)&&e.size>=20&&e.size<=(e.type==='art'?1200:200)&&/^#[\da-f]{6}$/i.test(e.color)&&['center','left','right'].includes(e.align)&&['serif','sans-serif','Heebo','Assistant'].includes(e.font)&&(!e.type||['text','art'].includes(e.type))&&(e.type!=='art'||shapes.includes(e.shape))&&(e.opacity===undefined||Number.isFinite(e.opacity)&&e.opacity>=0&&e.opacity<=1)&&(e.animation===undefined||['none','fade','breathe'].includes(e.animation)));}
+const color=v=>typeof v==='string'&&/^#[\da-f]{6}$/i.test(v);
+const number=(v,min,max)=>Number.isFinite(v)&&v>=min&&v<=max;
+export const safePhoto=src=>src===null||typeof src==='string'&&/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(src);
+export function validStory(s){
+ if(!s||s.version!==3||!color(s.bg)||!color(s.accent)||!number(s.duration,3,15)||!number(s.motion,0,2)||!Array.isArray(s.elements)||s.elements.length>50||new Set(s.elements.map(e=>e?.id)).size!==s.elements.length)return false;
+ return s.elements.every(e=>e&&Number.isFinite(e.id)&&['text','photo','rect'].includes(e.type)&&number(e.x,-2160,3240)&&number(e.y,-3840,5760)&&number(e.opacity,0,1)&&['none','fade','slide','zoom','pan'].includes(e.animation)&&(e.type==='text'?typeof e.text==='string'&&e.text.length<=2000&&number(e.size,20,200)&&color(e.color)&&['Heebo','Assistant','serif','sans-serif'].includes(e.font)&&['center','left','right'].includes(e.align):number(e.width,2,3240)&&number(e.height,2,5760)&&(e.type==='rect'?color(e.color):safePhoto(e.src)&&typeof e.label==='string'&&e.label.length<=120&&number(e.zoom,1,3)&&number(e.focusX,0,100)&&number(e.focusY,0,100)&&number(e.tint,0,1)&&color(e.tintColor)&&typeof e.placeholderText==='string'&&e.placeholderText.length<=120&&color(e.placeholderColor)&&color(e.placeholderInk)&&number(e.placeholderY,0,1))));
+}
+// Preserve words and uploaded photographs from the previous editor, never its illustrations.
+export function migrateStory(old){
+ if(validStory(old))return structuredClone(old);
+ // Upgrade earlier photo drafts without requesting missing stock assets.
+ if(old?.version===3&&Array.isArray(old.elements)){
+  const upgraded=structuredClone(old),defaults=photograph(0,540,960,1080,1920);
+  upgraded.elements=upgraded.elements.map(e=>e?.type==='photo'?{...defaults,...e,src:safePhoto(e.src)?e.src:null}:e);
+  if(validStory(upgraded))return upgraded;
+ }
+
+ if(!old||!Array.isArray(old.elements))return null;
+ const index=templates.findIndex(t=>t.scene===old.scene);
+ const next=createStory(Math.max(0,index));
+ for(const e of old.elements){if(e&&(!e.type||e.type==='text')&&typeof e.text==='string'&&e.text.length<=2000){const target=next.elements.find(n=>n.id===e.id&&n.type==='text');if(target)target.text=e.text;else if(next.elements.length<50&&color(e.color)&&number(e.size,20,200)&&Number.isFinite(e.x)&&Number.isFinite(e.y))next.elements.push({...text(Date.now()+next.elements.length,e.text,e.x,e.y,e.size,e.color),font:['Heebo','Assistant','serif','sans-serif'].includes(e.font)?e.font:'Assistant'});}}
+ if(old.photo&&safePhoto(old.photo))next.elements.find(e=>e.type==='photo').src=old.photo;
+ return validStory(next)?next:null;
+}

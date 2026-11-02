@@ -1,6 +1,6 @@
 # Rona Stories Studio
 
-A Hebrew, right-to-left Instagram Stories editor. Includes nine finished story designs, editable text and vector artwork, font/color/alignment controls, photo backgrounds, undo, browser-local draft persistence, full-size 1080 × 1920 PNG export, and animated WebM export. Responsive layout supports desktop and mobile.
+A Hebrew, right-to-left Instagram Stories editor. Includes nine finished story designs, editable text, photographs, and color panels, font/color/alignment controls, photo backgrounds, undo, browser-local draft persistence, full-size 1080 × 1920 PNG export, and native H.264 MP4 export where supported and WebM fallback. Responsive layout supports desktop and mobile.
 
 ## Run
 
@@ -10,7 +10,7 @@ Requires Node.js 22 or newer. No dependencies or API keys are needed.
 npm start
 ```
 
-The server listens on port 3000 (`PORT` overrides it). Open the app in your browser. Pick a template, edit or add text, drag text on the canvas, upload a background photo, and download the PNG. Selecting a template replaces the current design; undo restores it. Drafts stay in the current browser and are not uploaded. Images are resized locally before saving; browser storage limits may prevent saving large drafts.
+The server listens on port 3000 (`PORT` overrides it). Open the app in your browser. Pick a template, edit or add text, drag text on the canvas, upload or replace a photograph, and download the PNG. Selecting a story restores its own saved edits; reset loads its original layout, and undo restores the preceding design. Drafts stay in the current browser and are not uploaded. Images are resized locally before saving; browser storage limits may prevent saving large drafts.
 
 ## Validate
 
@@ -33,13 +33,26 @@ Chrome's menu → **Add to Home screen** creates a convenient shortcut. An inter
 
 GitHub Pages serves these static files directly, without Node or an install step. Relative asset paths support the repository's Pages subdirectory. `.nojekyll` prevents unnecessary Jekyll processing. Pages availability depends on the repository's visibility and GitHub plan.
 
-## The Rona collection
+## The editorial Rona collection
 
-Nine finished 1080 × 1920 designs are included: three on Red Tent / menstrual traditions, three on severe period pain / endometriosis, and three on progesterone / the nervous system. Text, original faceless vector illustrations, ornaments, and source captions are independent layers. Select a layer to edit its text or illustration type, position, size, color, opacity, animation, and stacking order. Background and photo upload remain available. Template selection loads the original design; undo can recover the preceding draft.
+The redesign retains all nine Hebrew stories and their three research topics, using editable photographic frames and brand-color panels in place of the former illustrations. The original illustration renderer has been removed. Heebo and Assistant remain bundled locally under `src/fonts/` with their SIL Open Font License notices.
 
-Heebo and Assistant are bundled locally under `src/fonts/` with their SIL Open Font License notices. No font service, image service, API key, package installation, or build step is required. All artwork is original vector drawing in `src/art.js`.
+Each design includes a clearly labeled, editable photo placeholder, with all Hebrew copy and layout already complete. No stock photographs, silhouettes, cartoons, illustration assets, or external photo downloads are used. Placeholders can be exported immediately or replaced with the user's own JPG, PNG, or WebP photographs. Placeholder color, text, caption, and caption position are editable. The canvas upload button works on mobile; tapping an empty photo slot also opens the photo picker.
 
-Use **שמירת קובץ עריכה** to download a complete editable JSON design and **פתיחת קובץ עריכה** to restore it. Browser-local autosave retains the current draft, including older editor drafts. PNG export is static; animation preview and six-second WebM export use each layer's animation setting. WebM support depends on the browser, and Instagram may require conversion to MP4. The editor does not publish to Instagram.
+Every photograph has editable frame position, width/height, crop focus, zoom, opacity, color tint, and movement. Upload JPG, PNG, or WebP to replace a selected photograph. Text and brand-color panels remain independent layers, with stacking-order controls, drag positioning, undo, and animation settings. Each story's edits are saved separately in the browser. Older drafts are migrated without their illustrations; edited words and uploaded photographs are retained, and the original current draft is backed up locally.
+
+Use **שמירת קובץ עריכה** to save editable JSON and **פתיחת קובץ עריכה** to restore it. PNG export is static. Video uses native browser MediaRecorder encoding: H.264 MP4 is preferred, with an explicitly labeled WebM fallback. Output is 1080 × 1920 at 30 fps with an editable 3–15-second duration. MP4 support depends on the browser; unsupported browsers offer WebM instead. Exporting a placeholder keeps its label in the output; replace it first to export your own photograph. Export freezes the design and editing controls until completion; a cancel action is available. No video or image is sent to an external service.
+
+### Browser verification
+
+`npm test` validates the model and draft migration; `npm run check` checks JavaScript syntax. For browser verification, install Playwright outside the repository and use an available Chromium binary and ffprobe:
+
+```sh
+npm install --prefix /tmp/rona-browser playwright --no-audit --no-fund
+PLAYWRIGHT_MODULE=/tmp/rona-browser/node_modules/playwright node scripts/verify-editor.cjs
+```
+
+Start `npm start` first. `TEST_URL` can override the default local server address. The browser check renders all nine default placeholder designs directly. A synthetic image is used **only to simulate user uploads**, never as a bundled design asset. It tests photo replacement/cropping, per-story persistence, drag/undo, JSON round trips, PNG dimensions, actual H.264 MP4 metadata, mobile layout, tap-to-upload on mobile, text bounds, placeholder MP4 export, and recovery from corrupt uploaded images. It also asserts that no external image requests are made.
 
 ### Editorial sources and boundaries
 

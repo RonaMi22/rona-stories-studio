@@ -1,5 +1,70 @@
-<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Rona — Stories Studio</title><link rel="stylesheet" href="./src/style.css"></head><body>
-<header><a class="brand" href="./" aria-label="Rona Studio">rona<span>STORIES STUDIO</span></a><div class="project"><span class="dot"></span> <span id="design-name">האוהל האדום</span> <small> / אוסף רונה</small></div><div class="actions"><span id="save-status" role="status">כל השינויים נשמרו</span><button id="undo" title="ביטול פעולה">↶</button><button id="export" class="primary">הורדת סטורי <span>↓</span></button></div></header>
-<main><aside class="templates"><div class="eyebrow">THE RONA COLLECTION</div><h1>הגוף שלך. הסיפור שלך.</h1><p>תשעה סטוריז מעוצבים. שלוש שיחות חשובות.</p><div class="tabs"><b>האוסף המלא · 09</b><span>הכול ניתן לעריכה</span></div><div id="templates" class="template-grid"></div><div class="tip"><span>✧</span><b>קצת השראה, הרבה את.</b><p>כל טקסט, איור ועיטור הוא שכבה נפרדת. בחרי שכבה וערכי אותה כרצונך.</p></div></aside>
-<section class="workspace"><div class="canvas-heading"><span><span id="canvas-title">הסטורי שלך</span></span><small>INSTAGRAM STORY · 1080 × 1920</small></div><div class="canvas-wrap"><canvas id="story" width="1080" height="1920" aria-label="תצוגת הסטורי — גררו טקסט לשינוי מיקום"></canvas></div><div class="canvas-footer"><span>✥ גררי שכבות לשינוי מיקום</span><span>9:16 <i>│</i> 100%</span></div></section>
-<aside class="inspector"><div class="eyebrow">MAKE IT YOURS</div><h2>הפרטים הקטנים</h2><section><h3>שכבות · טקסט ואיור</h3><label>שכבות העיצוב<select id="layers"></select></label><label id="shape-label" hidden>סוג איור<select id="shape"></select></label><label>המילים שלך<textarea id="text" rows="4" maxlength="2000"></textarea></label><div class="row"><button id="add">＋ הוספת טקסט</button><button id="delete" aria-label="מחיקת טקסט">מחיקה</button></div><label>סגנון כתב<select id="font"><option value="Heebo">Heebo · כותרות</option><option value="Assistant">Assistant · טקסט</option><option value="serif">קלאסי / Serif</option><option value="sans-serif">מודרני / Sans</option></select></label><div class="row"><label>צבע טקסט<input id="ink" type="color"></label><label>יישור<select id="align"><option value="center">מרכז</option><option value="right">ימין</option><option value="left">שמאל</option></select></label></div><label class="range-label">גודל טקסט <output id="size-value"></output><input id="size" type="range" min="20" max="200"></label><div class="row"><label>מיקום X<input id="x" type="number" min="0" max="1080"></label><label>מיקום Y<input id="y" type="number" min="0" max="1920"></label></div><div class="row"><button id="backward">שכבה אחורה</button><button id="forward">שכבה קדימה</button></div><button id="add-art">＋ הוספת איור</button><label>שקיפות<input id="opacity" type="range" min="0" max="100"></label><label>אנימציה<select id="animation"><option value="none">ללא</option><option value="fade">כניסה עדינה</option><option value="breathe">נשימה עדינה</option></select></label></section><section><h3>רקע ואווירה</h3><div class="row"><label>צבע רקע<input id="bg" type="color"></label><label>צבע עיטור<input id="accent" type="color"></label></div><label class="upload" for="photo">↥ <b>העלאת תמונה משלך</b><small>JPG, PNG, WEBP · עד 10MB</small></label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp" hidden><button id="remove-photo" class="link">הסרת תמונה</button><label>כהות תמונה<input id="overlay" type="range" min="0" max="80"></label></section><section><h3>תצוגה ושמירה</h3><button id="play" aria-pressed="false">▷ תצוגת אנימציה</button><button id="export-video">וידאו מונפש · WebM</button><p class="export-note">PNG הוא תמונה קבועה. WebM הוא וידאו מונפש; ייתכן שיידרש להמיר ל־MP4 לפני העלאה לאינסטגרם.</p><button id="save-design">שמירת קובץ עריכה</button><label class="upload" for="load-design">פתיחת קובץ עריכה</label><input id="load-design" type="file" accept="application/json,.json" hidden></section><div class="private">◉ נשמר אוטומטית בדפדפן שלך</div></aside></main><div id="toast" role="status"></div><script type="module" src="./src/app.js"></script></body></html>
+<!doctype html>
+<html lang="he" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Rona — Stories Studio</title><link rel="stylesheet" href="./src/style.css"></head>
+<body>
+<header>
+ <a class="brand" href="./" aria-label="Rona Studio">rona<span>STORIES STUDIO</span></a>
+ <div class="project"><span class="dot"></span><span id="design-name">האוהל האדום</span><small> / אוסף רונה</small></div>
+ <div class="actions"><span id="save-status" role="status">הטיוטה נשמרת בדפדפן</span><button id="undo" title="ביטול פעולה" aria-label="ביטול פעולה">↶</button><button id="export" class="primary" disabled>הורדת PNG <span>↓</span></button></div>
+</header>
+<main>
+ <aside class="templates">
+  <div class="eyebrow">THE EDITORIAL COLLECTION</div><h1>הגוף שלך.<br>הסיפור שלך.</h1><p>תשעה סטוריז. שלוש שיחות חשובות.<br>מילים, צבע ומקום לצילום שלך.</p>
+  <div class="tabs"><b>האוסף המלא · 09</b><span>הכול ניתן לעריכה</span></div>
+  <div id="templates" class="template-grid"></div>
+  <div class="tip"><b>הצילום שלך. הקול שלך.</b><p>בחרי שכבה כדי לערוך אותה. אפשר להחליף כל תצלום, לשנות חיתוך, להזיז טקסט ולבחור תנועה עדינה.</p></div>
+  <button id="reset" class="link">שחזור העיצוב המקורי · ניתן לביטול</button>
+  <p class="photo-note">מקומות הצילום מוכנים לתמונות שלך. לא נדרשת גישה למאגרי תמונות.</p>
+ </aside>
+ <section class="workspace" aria-label="תצוגת הסטורי">
+  <div class="canvas-heading"><span>הסטורי שלך</span><small>INSTAGRAM STORY · 1080 × 1920</small></div>
+  <div class="canvas-wrap"><canvas id="story" width="1080" height="1920" aria-label="תצוגת הסטורי — בחרי שכבה וגררי לשינוי מיקום"></canvas></div>
+  <button id="quick-photo" class="primary quick-photo">＋ הוספת / החלפת צילום</button><p class="photo-help">בחירת צילום מהגלריה · אפשר להזיז ולחתוך אחרי ההעלאה</p><div class="preview-bar"><button id="play" aria-pressed="false" disabled>▷ תצוגת אנימציה</button><span id="image-status" role="status">טוענת תצלומים…</span><button id="retry-images" class="link">טעינה מחדש</button></div>
+  <div class="canvas-footer"><span>בחרי שכבה · גררי למיקום חדש</span><span>9:16 <i>│</i> 1080p</span></div>
+ </section>
+ <aside class="inspector">
+  <div class="eyebrow">MAKE IT YOURS</div><h2>הפרטים הקטנים</h2>
+  <section><h3>שכבות העיצוב</h3>
+   <label>שכבה פעילה<select id="layers"></select></label>
+   <div id="text-controls"><label>המילים שלך<textarea id="text" rows="4" maxlength="2000"></textarea></label>
+    <label>סגנון כתב<select id="font"><option value="Heebo">Heebo · כותרות</option><option value="Assistant">Assistant · טקסט</option><option value="serif">Serif</option><option value="sans-serif">Sans</option></select></label>
+    <label>יישור<select id="align"><option value="right">ימין</option><option value="center">מרכז</option><option value="left">שמאל</option></select></label>
+    <label class="range-label">גודל טקסט <output id="size-value"></output><input id="size" type="range" min="20" max="200"></label>
+   </div>
+   <label id="color-label">צבע השכבה<input id="ink" type="color"></label>
+   <div class="row"><label>מיקום X<input id="x" type="number" min="-2160" max="3240"></label><label>מיקום Y<input id="y" type="number" min="-3840" max="5760"></label></div>
+   <div id="frame-controls" class="row" hidden><label>רוחב<input id="width" type="number" min="2" max="3240"></label><label>גובה<input id="height" type="number" min="2" max="5760"></label></div>
+   <label>שקיפות<input id="opacity" type="range" min="0" max="100"></label>
+   <label>תנועת השכבה<select id="animation"><option value="none">ללא</option><option value="fade">כניסה עדינה</option><option value="slide">עלייה עדינה</option><option value="zoom">התקרבות איטית · תצלום</option><option value="pan">תזוזה איטית · תצלום</option></select></label>
+   <div class="row"><button id="backward">שכבה אחורה</button><button id="forward">שכבה קדימה</button></div>
+   <div class="row"><button id="add">＋ טקסט</button><button id="delete">מחיקת שכבה</button></div>
+   <div class="row"><button id="add-photo">＋ תצלום</button><button id="add-panel">＋ משטח צבע</button></div>
+  </section>
+  <section><h3>התצלום שלך</h3><button id="select-photo">בחירת שכבת התצלום</button>
+   <label class="upload" for="photo">↥ <b>החלפת התצלום בצילום שלך</b><small>JPG, PNG, WEBP · עד 10MB</small></label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+   <div id="photo-controls" hidden>
+    <label>כיתוב במקום הצילום<input id="placeholderText" type="text" maxlength="120"></label>
+    <label>תיאור / הצעה לצילום<input id="photo-label" type="text" maxlength="120"></label>
+    <div class="row"><label>צבע מקום הצילום<input id="placeholderColor" type="color"></label><label>צבע הכיתוב<input id="placeholderInk" type="color"></label></div>
+    <label>מיקום הכיתוב<input id="placeholderY" type="range" min="0" max="1" step="0.01"></label>
+    <label>קירוב<input id="zoom" type="range" min="1" max="3" step="0.01"></label>
+    <label>חיתוך אופקי<input id="focusX" type="range" min="0" max="100"></label>
+    <label>חיתוך אנכי<input id="focusY" type="range" min="0" max="100"></label>
+    <label>גוון מעל התצלום<input id="tintColor" type="color"></label><label>עוצמת הגוון<input id="tint" type="range" min="0" max="100"></label>
+   <button id="clear-photo">החזרת מקום הצילום · ללא מחיקת השכבה</button></div><button id="remove-photo" class="link">הסרת תצלום</button>
+  </section>
+  <section><h3>צבעי הסיפור</h3><div class="row"><label>רקע<input id="bg" type="color"></label><label>צבע מוביל<input id="accent" type="color"></label></div><div class="swatches" aria-label="צבעי המותג"><span style="background:#A5093C"></span><span style="background:#FFE6BD"></span><span style="background:#3F3D32"></span><span style="background:#9BAF87"></span></div></section>
+  <section><h3>תנועה וייצוא</h3>
+   <label class="range-label">אורך הסטורי <output id="duration-value"></output><input id="duration" type="range" min="3" max="15" step="1"></label>
+   <label>עוצמת התנועה<input id="motion" type="range" min="0" max="2" step="0.1"></label>
+   <label>פורמט וידאו<select id="video-format"><option value="mp4">MP4 · Instagram</option><option value="webm">WebM</option></select></label>
+   <button id="export-video" class="primary" disabled>הורדת וידאו מונפש ↓</button><p id="video-note" class="export-note"></p>
+  </section>
+  <section><h3>קובץ העריכה שלך</h3><button id="save-design">שמירת קובץ עריכה</button><label class="upload" for="load-design">פתיחת קובץ עריכה</label><input id="load-design" type="file" accept="application/json,.json" hidden></section>
+  <div class="private">◉ העריכות נשמרות בנפרד לכל סטורי בדפדפן שלך</div>
+ </aside>
+</main>
+<div id="toast" role="status"></div>
+<div id="export-progress" class="export-progress" hidden><div><p id="export-status" role="status">מכינה את הווידאו…</p><button id="cancel-export">ביטול הייצוא</button></div></div>
+<script type="module" src="./src/app.js"></script>
+</body></html>
