@@ -15,6 +15,7 @@ const fs=require('node:fs/promises'),path=require('node:path'),{execFileSync}=re
   if(design.motion){for(let n=0;n<design.duration*30;n++){await page.evaluate(t=>window.draw(t),n/30*1000);await page.screenshot({path:path.join(frames,String(n).padStart(4,'0')+'.jpg'),type:'jpeg',quality:94});if(n%120===0)console.log('Frame',id,n);}}
   const input=design.motion?['-framerate','30','-i',path.join(frames,'%04d.jpg')]:['-loop','1','-framerate','30','-i',path.join(out,id+'.png')];
   execFileSync('ffmpeg',['-y','-hide_banner','-loglevel','error',...input,'-f','lavfi','-i','anullsrc=channel_layout=stereo:sample_rate=48000','-t',String(design.duration),'-vf','scale=in_range=full:out_range=tv:out_color_matrix=bt709,format=yuv420p','-c:v','libx264','-threads','4','-preset','medium','-crf','19','-profile:v','high','-level:v','4.1','-color_range','tv','-colorspace','bt709','-color_primaries','bt709','-color_trc','bt709','-c:a','aac','-b:a','128k','-movflags','+faststart','-shortest',path.join(out,id+'.mp4')],{stdio:'inherit'});
+  if(series==='sperm-survival'&&id==='03'){await fs.copyFile(path.join(out,id+'.png'),path.join(out,'03-full-heading.png'));await fs.copyFile(path.join(out,id+'.mp4'),path.join(out,'03-full-heading.mp4'));}
   console.log('MP4',id);
  }
  await browser.close();if(errors.length)throw Error(errors.join('\n'));

@@ -1,6 +1,6 @@
 import {templates,createStory,validStory,migrateStory} from './model.js';
 import {render,prepareDesign,hitTest} from './render.js';
-import {restoreChartCaptions,removeChartHighlights} from './restore-chart-captions.js?v=full-chart-copy';
+import {restoreChartCaptions,removeChartHighlights,upgradeChartCaptionDraft} from './restore-chart-captions.js?v=visible-heading';
 const $=id=>document.getElementById(id),canvas=$('story'),ctx=canvas.getContext('2d');
 const fontsReady=Promise.all(['400 40px Assistant','700 40px Heebo'].map(f=>document.fonts.load(f,'אבג ABC')));
 let story=createStory(),selected=7,history=[],drag=null,playing=false,frame,loadVersion=0,assetsReady=false,exporting=false,cancelExport=false,photoUploadVersion=0;
@@ -172,17 +172,20 @@ sync();prepare();thumbnails();
 // Add the approved personal series alongside the original nine designs.
 async function personalSeries(folder='red-tent',container='red-tent-series',className='series-design'){
  try{
-  const entries=await (await fetch('./stories/'+folder+'/manifest.json'+(folder==='sperm-survival'?'?v=full-chart-copy':''))).json();
+  const entries=await (await fetch('./stories/'+folder+'/manifest.json'+(folder==='sperm-survival'?'?v=visible-heading':''))).json();
   for(const entry of entries){
-   const original=await (await fetch('./stories/'+folder+'/'+entry.design+(folder==='sperm-survival'?(entry.design.includes('?')?'&':'?')+'v2=full-chart-copy':''))).json();if(!validStory(original))throw Error('Invalid series design');
+   const original=await (await fetch('./stories/'+folder+'/'+entry.design+(folder==='sperm-survival'?(entry.design.includes('?')?'&':'?')+'v2=visible-heading':''))).json();if(!validStory(original))throw Error('Invalid series design');
    seriesOriginals.set(original.scene,structuredClone(original));
+   if(story.scene===original.scene&&(story.chartCopyVersion??0)<(original.chartCopyVersion??0)){
+    story=upgradeChartCaptionDraft(story,original);sync();persist();await prepare();
+   }
    const button=document.createElement('button');button.className=className;button.dataset.scene=original.scene;button.setAttribute('aria-label',entry.title);
    const image=document.createElement('img');image.className='mini';image.src='./stories/'+folder+'/'+entry.poster;image.alt=entry.title;
    const label=document.createElement('strong');label.textContent=entry.id+'. '+entry.title;button.append(image,label);
    button.onclick=async()=>{
     if(exporting)return;photoUploadVersion++;stop();checkpoint();persist();
     let saved;try{saved=JSON.parse(localStorage.getItem(draftKey(original.scene)));}catch{}
-    story=validStory(saved)?saved:structuredClone(original);
+    story=upgradeChartCaptionDraft(validStory(saved)?saved:structuredClone(original),original);
     if(story.scene==='sperm-survival-3'&&['chart-captions','complete-chart-copy'].includes(new URLSearchParams(location.search).get('repair'))){
      story=restoreChartCaptions(story,original,{useOriginalText:new URLSearchParams(location.search).get('repair')==='complete-chart-copy'});const url=new URL(location.href);url.searchParams.delete('repair');window.history.replaceState(null,'',url);
     }

@@ -18,3 +18,13 @@ export function removeChartHighlights(story){
  if(result.scene==='sperm-survival-3')result.elements=result.elements.filter(e=>!(e.type==='rect'&&[5,6].includes(e.id)&&e.label==='הדגשת יום'));
  return result;
 }
+
+// One-time upgrade for older local drafts. Later deliberate edits remain editable.
+export function upgradeChartCaptionDraft(story,original){
+ if(story.scene!=='sperm-survival-3'||original.scene!==story.scene||!original.chartCopyVersion||(story.chartCopyVersion??0)>=original.chartCopyVersion)return structuredClone(story);
+ const result=removeChartHighlights(restoreChartCaptions(story,original));
+ const heading=result.elements.find(e=>e.id===4);
+ if(heading?.text.replace(/\s+/g,' ').trim()==='ההיריון התחיל מיחסים באחד הימים האלה.')heading.text=original.elements.find(e=>e.id===4).text;
+ result.chartCopyVersion=original.chartCopyVersion;
+ return result;
+}

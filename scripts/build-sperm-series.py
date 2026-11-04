@@ -33,6 +33,7 @@ stories.append(s)
 s=base(3,'מה הטבלה מספרת',bg='#E9F0EB',duration=14)
 s['interaction']=interaction('poll','מאיזה מהם לדעתך?',['יום 11','יום 15','אי אפשר לדעת מהטבלה'])
 s['interaction']['stickerArea']=dict(x=150,y=1500,width=780,height=240)
+s['chartCopyVersion']=2
 s['chartContext']='The reported pregnancy originated from intercourse on cycle day 11 or 15 according to the user; neither encounter nor exact ovulation is determined from this chart.'
 w=860;h=552*w/463;top=350
 s['elements']=[photo('stories/sperm-survival/assets/chart-detail.png',540,top+h/2,w,h,id=1),
@@ -53,7 +54,8 @@ stories.append(s)
 manifest=[]
 for i,s in enumerate(stories,1):
  (dest/'designs'/f'{i:02}.json').write_text(json.dumps(s,ensure_ascii=False,separators=(',',':')))
+ if i==3:(dest/'designs'/'03-full-heading.json').write_text(json.dumps(s,ensure_ascii=False,separators=(',',':')))
  revision='full-chart-copy' if i==3 else 'raised'
- manifest.append(dict(id=i,title=s['title'],design=f'designs/{i:02}.json?v={revision}',poster=f'exports/{i:02}.png?v={revision}',video=f'exports/{i:02}.mp4?v={revision}',animated=s['motion']>0,interaction=s['interaction']))
+ manifest.append(dict(id=i,title=s['title'],design='designs/03-full-heading.json' if i==3 else f'designs/{i:02}.json?v={revision}',poster='exports/03-full-heading.png' if i==3 else f'exports/{i:02}.png?v={revision}',video='exports/03-full-heading.mp4' if i==3 else f'exports/{i:02}.mp4?v={revision}',animated=s['motion']>0,interaction=s['interaction']))
 (dest/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2))
 print('Built four approved short Stories with no URLs in exported text')

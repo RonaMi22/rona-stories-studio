@@ -19,3 +19,11 @@ test('recovers hidden, off-canvas or covered captions and retains personalized w
 test('does not add chart captions to any other story',()=>{const story=createStory();assert.deepEqual(restoreChartCaptions(story,original),story);});
 
 test('explicit full-copy recovery replaces truncated old words and restores every approved answer option',()=>{const draft=structuredClone(original);draft.elements=draft.elements.filter(e=>![2,3,8].includes(e.id));draft.elements.find(e=>e.id===4).text='ההיריון התחיל מיחסים באחד הימים האלה.';const result=restoreChartCaptions(draft,original,{useOriginalText:true});assert.equal(result.elements.find(e=>e.id===4).text,'ההיריון התחיל מיחסים ביום 11\nאו ביום 15 למחזור.');assert.equal(result.elements.find(e=>e.id===8).text,'יום 11   ·   יום 15\nאי אפשר לדעת מהטבלה');assert.ok(!result.elements.some(e=>[2,3].includes(e.id)));assert.deepEqual(result.elements.find(e=>e.type==='photo'),draft.elements.find(e=>e.type==='photo'));});
+
+test('older saved drafts recover the heading automatically once while retaining later edits',async()=>{
+ const {upgradeChartCaptionDraft}=await import('../src/restore-chart-captions.js');
+ const old=structuredClone(original);delete old.chartCopyVersion;old.elements=old.elements.filter(e=>![2,3,4].includes(e.id));old.elements.find(e=>e.id===1).focusX=22;
+ const fixed=upgradeChartCaptionDraft(old,original);assert.equal(fixed.chartCopyVersion,2);assert.equal(fixed.elements.find(e=>e.id===4).text,original.elements.find(e=>e.id===4).text);assert.deepEqual(fixed.elements.find(e=>e.id===1),old.elements.find(e=>e.id===1));assert.ok(!fixed.elements.some(e=>[2,3].includes(e.id)));
+ fixed.elements.find(e=>e.id===4).text='עריכה אישית חדשה';assert.deepEqual(upgradeChartCaptionDraft(fixed,original),fixed);
+ const partial=structuredClone(old);partial.elements.push({...original.elements.find(e=>e.id===4),text:'ההיריון התחיל מיחסים\nבאחד הימים האלה.'});assert.equal(upgradeChartCaptionDraft(partial,original).elements.find(e=>e.id===4).text,original.elements.find(e=>e.id===4).text);
+});
