@@ -11,3 +11,10 @@ export function restoreChartCaptions(story,original){
  result.elements=[...result.elements.filter(e=>!ids.has(e.id)),...restored];
  return result;
 }
+
+// Explicitly remove only the day-column overlays from this chart story.
+export function removeChartHighlights(story){
+ const result=structuredClone(story);
+ if(result.scene==='sperm-survival-3')result.elements=result.elements.filter(e=>!(e.type==='rect'&&[5,6].includes(e.id)&&e.label==='הדגשת יום'));
+ return result;
+}

@@ -1,6 +1,6 @@
 import {templates,createStory,validStory,migrateStory} from './model.js';
 import {render,prepareDesign,hitTest} from './render.js';
-import {restoreChartCaptions} from './restore-chart-captions.js';
+import {restoreChartCaptions,removeChartHighlights} from './restore-chart-captions.js?v=clean-chart';
 const $=id=>document.getElementById(id),canvas=$('story'),ctx=canvas.getContext('2d');
 const fontsReady=Promise.all(['400 40px Assistant','700 40px Heebo'].map(f=>document.fonts.load(f,'אבג ABC')));
 let story=createStory(),selected=7,history=[],drag=null,playing=false,frame,loadVersion=0,assetsReady=false,exporting=false,cancelExport=false,photoUploadVersion=0;
@@ -172,9 +172,9 @@ sync();prepare();thumbnails();
 // Add the approved personal series alongside the original nine designs.
 async function personalSeries(folder='red-tent',container='red-tent-series',className='series-design'){
  try{
-  const entries=await (await fetch('./stories/'+folder+'/manifest.json'+(folder==='sperm-survival'?'?v=caption-fix':''))).json();
+  const entries=await (await fetch('./stories/'+folder+'/manifest.json'+(folder==='sperm-survival'?'?v=clean-chart':''))).json();
   for(const entry of entries){
-   const original=await (await fetch('./stories/'+folder+'/'+entry.design+(folder==='sperm-survival'?(entry.design.includes('?')?'&':'?')+'v2=caption-fix':''))).json();if(!validStory(original))throw Error('Invalid series design');
+   const original=await (await fetch('./stories/'+folder+'/'+entry.design+(folder==='sperm-survival'?(entry.design.includes('?')?'&':'?')+'v2=clean-chart':''))).json();if(!validStory(original))throw Error('Invalid series design');
    seriesOriginals.set(original.scene,structuredClone(original));
    const button=document.createElement('button');button.className=className;button.dataset.scene=original.scene;button.setAttribute('aria-label',entry.title);
    const image=document.createElement('img');image.className='mini';image.src='./stories/'+folder+'/'+entry.poster;image.alt=entry.title;
@@ -185,6 +185,9 @@ async function personalSeries(folder='red-tent',container='red-tent-series',clas
     story=validStory(saved)?saved:structuredClone(original);
     if(story.scene==='sperm-survival-3'&&new URLSearchParams(location.search).get('repair')==='chart-captions'){
      story=restoreChartCaptions(story,original);const url=new URL(location.href);url.searchParams.delete('repair');window.history.replaceState(null,'',url);
+    }
+    if(story.scene==='sperm-survival-3'&&new URLSearchParams(location.search).get('clearHighlights')==='1'){
+     story=removeChartHighlights(story);const url=new URL(location.href);url.searchParams.delete('clearHighlights');window.history.replaceState(null,'',url);
     }
     selected=story.elements.find(e=>e.type==='text')?.id;sync();persist();await prepare();
    };$(container).append(button);sync();if(new URLSearchParams(location.search).get('story')===original.scene)button.click();

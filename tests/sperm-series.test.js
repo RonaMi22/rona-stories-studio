@@ -18,12 +18,11 @@ test('research copy remains observational, has no unverified numbers, and reques
  const story=await get('02'),text=story.elements.filter(e=>e.type==='text').map(e=>e.text).join(' ');
  assert.ok(text.includes('במחקר תצפיתי'));assert.ok(text.includes('סוגי מיקרופלסטיק'));assert.ok(text.includes('תנועתיות מתקדמת'));assert.ok(text.includes('לא הוכחה לסיבה'));assert.ok(!/8\.3|25\.67|45\.64/.test(text));assert.equal(story.interaction.fulfillment,'manual_dm');
 });
-test('chart is a fixed sanitized raster with editable highlights at the actual day columns',async()=>{
+test('chart is a fixed sanitized raster without added highlight overlays',async()=>{
  const story=await get('03'),image=story.elements.find(e=>e.type==='photo'),chart=await readFile(new URL('../stories/sperm-survival/assets/chart-detail.png',import.meta.url));
  assert.equal(chart.readUInt32BE(16),463);assert.equal(chart.readUInt32BE(20),552);assert.deepEqual(Buffer.from(image.src.split(',')[1],'base64'),chart);
  assert.equal(image.animation,'none');assert.equal(story.motion,0);
- const marks=story.elements.filter(e=>e.type==='rect');assert.equal(marks.length,2);
- assert.ok(Math.abs(marks[0].x-(image.x-image.width/2+116*image.width/463))<.01);assert.ok(Math.abs(marks[1].x-(image.x-image.width/2+222*image.width/463))<.01);
+ assert.equal(story.elements.filter(e=>e.type==='rect').length,0);
  assert.ok(story.interaction.options.includes('אי אפשר לדעת מהטבלה'));assert.ok(!('correctAnswer' in story.interaction));
 });
 

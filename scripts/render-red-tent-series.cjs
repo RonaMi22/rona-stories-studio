@@ -5,7 +5,7 @@ const fs=require('node:fs/promises'),path=require('node:path'),{execFileSync}=re
  const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
  const page=await browser.newPage({viewport:{width:1080,height:1920},deviceScaleFactor:1});const errors=[];page.on('pageerror',e=>errors.push(e.message));
  for(let i=1;i<=4;i++){
-  const id=String(i).padStart(2,'0');await page.goto((process.env.TEST_URL||'http://127.0.0.1:3000')+'/scripts/red-tent-render.html?id='+id+'&series='+series);await page.evaluate(()=>window.ready);
+  const id=String(i).padStart(2,'0');if(process.env.STORY_ID&&id!==process.env.STORY_ID.padStart(2,'0'))continue;await page.goto((process.env.TEST_URL||'http://127.0.0.1:3000')+'/scripts/red-tent-render.html?id='+id+'&series='+series);await page.evaluate(()=>window.ready);
   const bounds=await page.evaluate(async()=>{const {font}=await import('/src/render.js');const ctx=document.querySelector('canvas').getContext('2d');return window.design.elements.filter(e=>e.type==='text').map(e=>{ctx.font=font(e);const w=Math.max(...e.text.split('\n').map(l=>ctx.measureText(l).width));return {id:e.id,left:e.x-w,right:e.x,top:e.y-(e.text.split('\n').length-1)*e.size*1.35/2-e.size*.55,bottom:e.y+(e.text.split('\n').length-1)*e.size*1.35/2+e.size*.55};});});
   const overflow=bounds.filter(e=>e.left<95||e.right>980||e.top<100||e.bottom>1800);if(overflow.length)throw Error(id+' text outside safe bounds '+JSON.stringify(overflow));
   await page.screenshot({path:path.join(out,id+'.png')});console.log('Poster',id);
