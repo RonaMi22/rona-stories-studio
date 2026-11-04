@@ -2,8 +2,9 @@ import {templates,createStory,validStory,migrateStory} from './model.js';
 import {render,prepareDesign,hitTest} from './render.js';
 const $=id=>document.getElementById(id),canvas=$('story'),ctx=canvas.getContext('2d');
 const fontsReady=Promise.all(['400 40px Assistant','700 40px Heebo'].map(f=>document.fonts.load(f,'אבג ABC')));
-let story=createStory(),selected=7,history=[],drag=null,playing=false,frame,loadVersion=0,assetsReady=false,exporting=false,cancelExport=false;
+let story=createStory(),selected=7,history=[],drag=null,playing=false,frame,loadVersion=0,assetsReady=false,exporting=false,cancelExport=false,photoUploadVersion=0;
 const draftKey=scene=>'rona-editorial-'+scene;
+const seriesOriginals=new Map();
 try{
  const raw=localStorage.getItem('rona-story'),saved=JSON.parse(raw),migrated=migrateStory(saved);
  if(migrated){story=migrated;if(saved.version!==3&&!localStorage.getItem('rona-before-editorial'))localStorage.setItem('rona-before-editorial',raw);}
@@ -29,7 +30,7 @@ function sync(){
  $('text-controls').hidden=!text;$('frame-controls').hidden=!e||text;$('photo-controls').hidden=!photo;$('color-label').hidden=photo;
  for(const id of ['text','font','align','size','ink','delete','opacity','animation','x','y','forward','backward'])$(id).disabled=!e;
  if(e){
-  $('x').value=Math.round(e.x);$('y').value=Math.round(e.y);$('opacity').value=e.opacity*100;$('animation').value=e.animation;
+  $('x').value=Math.round(e.x);$('y').value=Math.round(e.y);$('opacity').value=e.opacity*100;$('animation').value=e.animation;$('animation-delay').value=e.delay??story.elements.indexOf(e)*.045;$('animation-duration').value=e.fadeDuration??.7;
   if(text){$('text').value=e.text;$('font').value=e.font;$('align').value=e.align;$('size').value=e.size;$('size-value').value=e.size+' px';}
   if(!photo)$('ink').value=e.color;
   if(!text){$('width').value=e.width;$('height').value=e.height;}
@@ -37,11 +38,11 @@ function sync(){
  }
  $('bg').value=story.bg;$('accent').value=story.accent;$('duration').value=story.duration;$('duration-value').value=story.duration+' שניות';$('motion').value=story.motion;
  $('undo').disabled=!history.length;$('design-name').textContent=story.title??'הסטורי שלי';
- document.querySelectorAll('.template').forEach((b,i)=>b.classList.toggle('active',templates[i].scene===story.scene));draw();
+ document.querySelectorAll('.template').forEach((b,i)=>b.classList.toggle('active',templates[i].scene===story.scene));document.querySelectorAll('.series-design').forEach(b=>b.classList.toggle('active',b.dataset.scene===story.scene));draw();
 }
 function stop(){playing=false;cancelAnimationFrame(frame);$('play').textContent='▷ תצוגת אנימציה';$('play').setAttribute('aria-pressed','false');draw();}
 async function choose(index,reset=false){
- if(exporting)return;stop();checkpoint();persist();
+ if(exporting)return;photoUploadVersion++;stop();checkpoint();persist();
  let saved;try{saved=JSON.parse(localStorage.getItem(draftKey(templates[index].scene)));}catch{}
  story=!reset&&validStory(saved)?saved:createStory(index);selected=7;sync();persist();await prepare();
 }
@@ -55,7 +56,7 @@ async function thumbnails(){
   button.append(mini,title,tag);button.onclick=()=>choose(i);$('templates').append(button);
  }sync();
 }
-const bindings=[['text','text'],['font','font'],['align','align'],['size','size'],['ink','color'],['opacity','opacity'],['animation','animation'],['x','x'],['y','y'],['width','width'],['height','height'],['zoom','zoom'],['focusX','focusX'],['focusY','focusY'],['tint','tint'],['tintColor','tintColor'],['placeholderText','placeholderText'],['photo-label','label'],['placeholderColor','placeholderColor'],['placeholderInk','placeholderInk'],['placeholderY','placeholderY']];
+const bindings=[['text','text'],['font','font'],['align','align'],['size','size'],['ink','color'],['opacity','opacity'],['animation','animation'],['x','x'],['y','y'],['width','width'],['height','height'],['zoom','zoom'],['focusX','focusX'],['focusY','focusY'],['tint','tint'],['tintColor','tintColor'],['placeholderText','placeholderText'],['photo-label','label'],['placeholderColor','placeholderColor'],['placeholderInk','placeholderInk'],['placeholderY','placeholderY'],['animation-delay','delay'],['animation-duration','fadeDuration']];
 for(const [id,key] of bindings)$(id).addEventListener('input',()=>{
  const e=selectedLayer();if(!e||exporting)return;const input=$(id);let value=input.value;
  if(input.type==='number'||input.type==='range'){value=Number(value);if(!Number.isFinite(value))return;value=Math.max(Number(input.min),Math.min(Number(input.max),value));}
@@ -71,21 +72,59 @@ function add(type){
  story.elements.push(element);sync();persist();if(type==='photo')prepare();
 }
 $('add').onclick=()=>add('text');$('add-panel').onclick=()=>add('rect');$('add-photo').onclick=()=>add('photo');
-$('delete').onclick=()=>{if(!selectedLayer())return;stop();checkpoint();story.elements=story.elements.filter(e=>e.id!==selected);selected=story.elements[0]?.id;sync();persist();prepare();};
+$('delete').onclick=()=>{if(!selectedLayer())return;if(selectedLayer().type==='photo')return clearPhoto();photoUploadVersion++;stop();checkpoint();story.elements=story.elements.filter(e=>e.id!==selected);selected=story.elements[0]?.id;sync();persist();prepare();};
 for(const [id,delta] of [['forward',1],['backward',-1]])$(id).onclick=()=>{const i=story.elements.findIndex(e=>e.id===selected),j=i+delta;if(j<0||j>=story.elements.length)return;stop();checkpoint();[story.elements[i],story.elements[j]]=[story.elements[j],story.elements[i]];sync();persist();};
-$('undo').onclick=async()=>{if(!history.length)return;stop();story=JSON.parse(history.pop());selected=story.elements.find(e=>e.type==='text')?.id;sync();persist();await prepare();};
-$('reset').onclick=()=>choose(Math.max(0,templates.findIndex(t=>t.scene===story.scene)),true);
+$('undo').onclick=async()=>{if(!history.length)return;photoUploadVersion++;stop();story=JSON.parse(history.pop());selected=story.elements.find(e=>e.type==='text')?.id;sync();persist();await prepare();};
+$('reset').onclick=async()=>{
+ if(seriesOriginals.has(story.scene)){
+  photoUploadVersion++;stop();checkpoint();story=structuredClone(seriesOriginals.get(story.scene));selected=story.elements.find(e=>e.type==='text')?.id;sync();persist();await prepare();
+ }else if(story.scene?.startsWith('red-tent-personal-'))toast('הסדרה עדיין נטענת. נסי שוב בעוד רגע.');
+ else choose(Math.max(0,templates.findIndex(t=>t.scene===story.scene)),true);
+};
 $('retry-images').onclick=()=>prepare();
 function photoTarget(){return selectedLayer()?.type==='photo'?selectedLayer():story.elements.find(e=>e.type==='photo');}
 $('select-photo').onclick=()=>{const e=photoTarget();if(e){selected=e.id;sync();}else add('photo');};
-$('clear-photo').onclick=async()=>{const e=photoTarget();if(!e)return;stop();checkpoint();e.src=null;e.zoom=1;e.focusX=50;e.focusY=50;selected=e.id;sync();persist();await prepare();};
+async function clearPhoto(){
+ const e=photoTarget();if(!e)return;
+ photoUploadVersion++;stop();checkpoint();
+ e.src=null;e.zoom=1;e.focusX=50;e.focusY=50;
+ selected=e.id;sync();persist();await prepare();
+}
+$('clear-photo').onclick=clearPhoto;
+$('remove-photo').onclick=clearPhoto;
+// Deleting a photograph clears its contents; frame deletion is a separate explicit action.
+$('delete-photo-frame').onclick=()=>{
+ const e=photoTarget();if(!e)return;
+ photoUploadVersion++;stop();checkpoint();story.elements=story.elements.filter(layer=>layer!==e);
+ selected=story.elements.find(layer=>layer.type==='text')?.id;sync();persist();prepare();
+};
 $('quick-photo').onclick=()=>$('photo').click();
 $('photo').onchange=async()=>{
- const file=$('photo').files[0];if(!file)return;
- if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>10*1024*1024){toast('בחרי JPG, PNG או WEBP עד 10MB');$('photo').value='';return;}
- try{const bitmap=await createImageBitmap(file);const c=document.createElement('canvas'),scale=Math.min(1,2400/Math.max(bitmap.width,bitmap.height));c.width=Math.max(1,Math.round(bitmap.width*scale));c.height=Math.max(1,Math.round(bitmap.height*scale));c.getContext('2d').drawImage(bitmap,0,0,c.width,c.height);bitmap.close();stop();let e=photoTarget();if(!e){add('photo');e=selectedLayer();}else checkpoint();e.src=c.toDataURL('image/jpeg',.86);e.label='התצלום שלי';e.zoom=1;e.focusX=50;e.focusY=50;selected=e.id;sync();persist();await prepare();}catch{toast('התמונה לא תקינה. נסי תמונה אחרת.');}finally{$('photo').value='';}
+ const file=$('photo').files[0];$('photo').value='';if(!file)return;
+ const version=++photoUploadVersion,targetStory=story,targetFrame=photoTarget();
+ if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>10*1024*1024){toast('בחרי JPG, PNG או WEBP עד 10MB');await prepare();return;}
+ loadVersion++;assetsReady=false;$('image-status').textContent='טוענת את התצלום החדש…';updateExportButtons();
+ const current=()=>version===photoUploadVersion&&story===targetStory&&(!targetFrame||story.elements.includes(targetFrame));
+ try{
+  const bitmap=await createImageBitmap(file),c=document.createElement('canvas');
+  const scale=Math.min(1,2400/Math.max(bitmap.width,bitmap.height));
+  c.width=Math.max(1,Math.round(bitmap.width*scale));c.height=Math.max(1,Math.round(bitmap.height*scale));
+  c.getContext('2d').drawImage(bitmap,0,0,c.width,c.height);bitmap.close();
+  const src=c.toDataURL('image/jpeg',.86);
+  // Decode into the renderer cache before replacing the visible source.
+  await Promise.all([fontsReady,prepareDesign({elements:[{type:'photo',src}]})]);
+  if(!current())return;
+  if(!targetFrame&&story.elements.length>=50){toast('אפשר להוסיף עד 50 שכבות');await prepare();return;}
+  stop();checkpoint();let e=targetFrame;
+  if(!e){
+   // Recover a previously deleted frame in its story's original position, below text/panels.
+   const index=Math.max(0,templates.findIndex(t=>t.scene===story.scene));
+   e={...createStory(index).elements.find(layer=>layer.type==='photo'),id:Date.now()};story.elements.unshift(e);
+  }
+  e.src=src;e.label='התצלום שלי';e.zoom=1;e.focusX=50;e.focusY=50;
+  selected=e.id;sync();persist();await prepare();
+ }catch{if(current()){toast('התמונה לא תקינה. נסי תמונה אחרת.');await prepare();}}
 };
-$('remove-photo').onclick=()=>{const e=photoTarget();if(!e)return;selected=e.id;$('delete').click();};
 function point(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*1080/r.width,y:(e.clientY-r.top)*1920/r.height};}
 canvas.onpointerdown=e=>{if(exporting)return;stop();const p=point(e),current=selectedLayer(),hit=current&&hitTest(ctx,current,p)?current:[...story.elements].reverse().find(t=>hitTest(ctx,t,p));if(hit){checkpoint();selected=hit.id;drag={x:p.x-hit.x,y:p.y-hit.y,startX:p.x,startY:p.y,moved:false};canvas.setPointerCapture(e.pointerId);sync();}};
 canvas.onpointermove=e=>{if(!drag)return;const p=point(e),t=selectedLayer();if(Math.hypot(p.x-drag.startX,p.y-drag.startY)>20)drag.moved=true;t.x=Math.round(Math.max(-2160,Math.min(3240,p.x-drag.x)));t.y=Math.round(Math.max(-3840,Math.min(5760,p.y-drag.y)));$('x').value=t.x;$('y').value=t.y;draw();};
@@ -94,7 +133,7 @@ canvas.onpointercancel=()=>{if(drag){drag=null;persist();}};
 function download(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 $('export').onclick=async()=>{if(!assetsReady)return;stop();await fontsReady;draw();canvas.toBlob(blob=>{if(blob){download(blob,'rona-'+story.scene+'.png');toast('הסטורי מוכן ✨');}else toast('הייצוא נכשל');},'image/png');};
 $('save-design').onclick=()=>download(new Blob([JSON.stringify(story,null,2)],{type:'application/json'}),'rona-'+story.scene+'-editable.json');
-$('load-design').onchange=async()=>{try{const file=$('load-design').files[0];if(!file)return;if(file.size>20*1024*1024)throw Error();const next=migrateStory(JSON.parse(await file.text()));if(!next)throw Error();stop();checkpoint();story=next;selected=story.elements.find(e=>e.type==='text')?.id;sync();persist();await prepare();}catch{toast('קובץ העיצוב אינו תקין');}finally{$('load-design').value='';}};
+$('load-design').onchange=async()=>{try{const file=$('load-design').files[0];if(!file)return;if(file.size>20*1024*1024)throw Error();const next=migrateStory(JSON.parse(await file.text()));if(!next)throw Error();photoUploadVersion++;stop();checkpoint();story=next;selected=story.elements.find(e=>e.type==='text')?.id;sync();persist();await prepare();}catch{toast('קובץ העיצוב אינו תקין');}finally{$('load-design').value='';}};
 $('play').onclick=()=>{if(playing)return stop();if(!assetsReady)return;playing=true;const start=performance.now();$('play').textContent='Ⅱ עצירת אנימציה';$('play').setAttribute('aria-pressed','true');const tick=now=>{const elapsed=now-start;if(elapsed>story.duration*1000)return stop();draw(elapsed);frame=requestAnimationFrame(tick);};frame=requestAnimationFrame(tick);};
 const mp4Types=['video/mp4;codecs=avc1.42001E','video/mp4'],webmTypes=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];
 const supported=types=>window.MediaRecorder?types.find(t=>MediaRecorder.isTypeSupported(t)):undefined;
@@ -122,3 +161,23 @@ $('export-video').onclick=async()=>{
  finally{stream.getTracks().forEach(t=>t.stop());exporting=false;document.querySelector('main').inert=false;document.querySelector('header').inert=false;$('export-progress').hidden=true;updateExportButtons();draw();}
 };
 sync();prepare();thumbnails();
+
+// Add the approved personal series alongside the original nine designs.
+async function personalSeries(){
+ try{
+  const entries=await (await fetch('./stories/red-tent/manifest.json')).json();
+  for(const entry of entries){
+   const original=await (await fetch('./stories/red-tent/'+entry.design)).json();if(!validStory(original))throw Error('Invalid series design');
+   seriesOriginals.set(original.scene,structuredClone(original));
+   const button=document.createElement('button');button.className='series-design';button.dataset.scene=original.scene;button.setAttribute('aria-label',entry.title);
+   const image=document.createElement('img');image.className='mini';image.src='./stories/red-tent/'+entry.poster;image.alt=entry.title;
+   const label=document.createElement('strong');label.textContent=entry.id+'. '+entry.title;button.append(image,label);
+   button.onclick=async()=>{
+    if(exporting)return;photoUploadVersion++;stop();checkpoint();persist();
+    let saved;try{saved=JSON.parse(localStorage.getItem(draftKey(original.scene)));}catch{}
+    story=validStory(saved)?saved:structuredClone(original);selected=story.elements.find(e=>e.type==='text')?.id;sync();persist();await prepare();
+   };$('red-tent-series').append(button);sync();if(new URLSearchParams(location.search).get('story')===original.scene)button.click();
+  }
+ }catch{const notice=document.createElement('p');notice.textContent='הסדרה לא נטענה. אפשר לרענן את הדף ולנסות שוב.';$('red-tent-series').append(notice);}
+}
+personalSeries();

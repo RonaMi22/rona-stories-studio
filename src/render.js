@@ -11,9 +11,11 @@ export function render(ctx,design,time=null){
  const duration=design.duration*1000,progress=time===null?0:Math.min(1,time/duration),motion=design.motion;
  for(const [i,e] of design.elements.entries()){
  ctx.save();ctx.globalAlpha=e.opacity;
+ const start=e.delay===undefined?i*45:e.delay*1000,fade=(e.fadeDuration??.7)*1000;
+ const entrance=time===null?1:Math.min(1,Math.max(0,(time-start)/fade));
  if(time!==null&&motion>0){
-  if(e.animation==='fade'||e.animation==='slide')ctx.globalAlpha*=Math.min(1,Math.max(0,(time-i*45)/700));
-  if(e.animation==='slide')ctx.translate(0,(1-Math.min(1,Math.max(0,(time-i*45)/700)))*30*motion);
+  if(e.animation==='fade'||e.animation==='slide')ctx.globalAlpha*=entrance;
+  if(e.animation==='slide')ctx.translate(0,(1-entrance)*30*motion);
  }
  if(e.type==='text'){
   ctx.direction=/[\u0590-\u05ff]/.test(e.text)?'rtl':'ltr';ctx.font=font(e);ctx.fillStyle=e.color;ctx.textAlign=e.align;ctx.textBaseline='middle';

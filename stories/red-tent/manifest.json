@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "title": "האוהל שהייתי צריכה",
+    "design": "designs/01.json",
+    "poster": "exports/01.png",
+    "video": "exports/01.mp4",
+    "animated": true,
+    "interaction": {
+      "type": "poll",
+      "question": "מה את מכירה?",
+      "options": [
+        "את הספר",
+        "מעגלי נשים",
+        "מסורת עתיקה",
+        "לא מכירה"
+      ],
+      "nativeStickerRequired": true
+    }
+  },
+  {
+    "id": 2,
+    "title": "למה הרעיון מושך אותי",
+    "design": "designs/02.json",
+    "poster": "exports/02.png",
+    "video": "exports/02.mp4",
+    "animated": false,
+    "interaction": null
+  },
+  {
+    "id": 3,
+    "title": "מה שלא נכנס לספרים",
+    "design": "designs/03.json",
+    "poster": "exports/03.png",
+    "video": "exports/03.mp4",
+    "animated": false,
+    "interaction": null
+  },
+  {
+    "id": 4,
+    "title": "האוהל האדום שלך",
+    "design": "designs/04.json",
+    "poster": "exports/04.png",
+    "video": "exports/04.mp4",
+    "animated": true,
+    "interaction": {
+      "type": "question",
+      "question": "מה היית צריכה באותו רגע?",
+      "nativeStickerRequired": true
+    }
+  }
+]
