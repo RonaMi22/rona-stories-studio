@@ -12,48 +12,48 @@ def panel(i,x,y,w,h,color,opacity=1):return dict(id=i,type='rect',label='הדג�
 def base(i,title,bg=cream,duration=12,motion=0):
  return dict(version=3,title=title,scene=f'sperm-survival-{i}',series='זרע, פוריות ומה שביניהם',bg=bg,accent=ink,photo=None,overlay=0,duration=duration,motion=motion,elements=[])
 def interaction(kind,question,options=None):
- return dict(type=kind,question=question,options=options or [],nativeStickerRequired=True,stickerArea=dict(x=150,y=1550,width=780,height=250))
+ return dict(type=kind,question=question,options=options or [],nativeStickerRequired=True,stickerArea=dict(x=150,y=1420,width=780,height=250))
 stories=[]
 s=base(1,'גם כשיש ילד משותף',motion=1)
 s['interaction']=interaction('poll','היית חושבת לבדוק גם את הזרע?',['כן','לא בטוח'])
-s['elements']=[photo('stories/red-tent/assets/8070371.jpg',540,310,1080,620,90,'zoom'),text(2,'rona',940,150,54,ink,'Heebo'),text(3,'01 / 04',270,150,26),
- text(4,'משיחה עם עוקבת אתמול\nהבנתי משהו שממש חשוב לי\nלדבר עליו.',940,830,50,ink,'Heebo','fade',.1),
- text(5,'יש לכם כבר ילד משותף?\nזה לא אומר שאין סיבה\nלבדוק גם את הזרע.',940,1100,49,ink,animation='fade',delay=.35),
- text(6,'בעיניי, שווה לדבר על הבדיקה\nמוקדם יותר.',940,1350,49,terra,'Heebo','fade',.6),
- text(7,'היית חושבת לבדוק גם את הזרע?',940,1510,40,ink,'Heebo','fade',.8)]
+s['elements']=[photo('stories/red-tent/assets/8070371.jpg',540,290,1080,580,90,'zoom'),text(2,'rona',940,150,54,ink,'Heebo'),text(3,'01 / 04',270,150,26),
+ text(4,'משיחה עם עוקבת אתמול\nהבנתי משהו שממש חשוב לי\nלדבר עליו.',940,730,50,ink,'Heebo','fade',.1),
+ text(5,'יש לכם כבר ילד משותף?\nזה לא אומר שאין סיבה\nלבדוק גם את הזרע.',940,1000,49,ink,animation='fade',delay=.35),
+ text(6,'בעיניי, שווה לדבר על הבדיקה\nמוקדם יותר.',940,1220,49,terra,'Heebo','fade',.6),
+ text(7,'היית חושבת לבדוק גם את הזרע?',940,1350,40,ink,'Heebo','fade',.8)]
 stories.append(s)
 s=base(2,'מה המחקר מצא',duration=14)
 s['interaction']=interaction('poll','רוצה שאשלח לך את המחקר בפרטי?',['כן, אשמח','לא כרגע'])
-s['interaction']['fulfillment']='manual_dm';s['interaction']['stickerArea']['y']=1540
+s['interaction']['fulfillment']='manual_dm';s['interaction']['stickerArea']['y']=1410
 s['elements']=[photo('stories/red-tent/assets/keen-879486.jpg',540,325,1080,650,92),text(2,'rona',940,150,54,cream,'Heebo'),text(3,'02 / 04',270,150,26,cream),
- text(4,'במחקר תצפיתי נמצא קשר בין\nיותר סוגי מיקרופלסטיק בדגימות\nלבין תנועתיות מתקדמת\nנמוכה יותר של הזרע.',940,930,48),
- text(5,'זה קשר,\nלא הוכחה לסיבה.',940,1220,60,terra,'Heebo'),
- text(6,'רוצה שאשלח לך את המחקר\nבפרטי?',940,1450,47,ink,'Heebo')]
+ text(4,'במחקר תצפיתי נמצא קשר בין\nיותר סוגי מיקרופלסטיק בדגימות\nלבין תנועתיות מתקדמת\nנמוכה יותר של הזרע.',940,830,48),
+ text(5,'זה קשר,\nלא הוכחה לסיבה.',940,1120,60,terra,'Heebo'),
+ text(6,'אם תרצי שאשלח לך את המחקר,\nכתבי לי בפרטי.',940,1310,47,ink,'Heebo')]
 stories.append(s)
 s=base(3,'מה הטבלה מספרת',bg='#E9F0EB',duration=14)
 s['interaction']=interaction('poll','מאיזה מהם לדעתך?',['יום 11','יום 15','אי אפשר לדעת מהטבלה'])
-s['interaction']['stickerArea']=dict(x=150,y=1590,width=780,height=240)
+s['interaction']['stickerArea']=dict(x=150,y=1500,width=780,height=240)
 s['chartContext']='The reported pregnancy originated from intercourse on cycle day 11 or 15 according to the user; neither encounter nor exact ovulation is determined from this chart.'
-w=900;h=552*w/463;top=430
+w=860;h=552*w/463;top=350
 s['elements']=[photo('stories/sperm-survival/assets/chart-detail.png',540,top+h/2,w,h,id=1),
  text(2,'rona',940,150,54,ink,'Heebo'),text(3,'03 / 04',270,150,26),
- text(4,'ההיריון התחיל מיחסים\nבאחד הימים האלה.',940,325,51,ink,'Heebo'),
- panel(5,90+(344-228)*w/463,top+h/2,26*w/463,h,terra,.14),
- panel(6,90+(450-228)*w/463,top+h/2,26*w/463,h,terra,.14),
- text(7,'מאיזה מהם לדעתך?',940,1560,46,ink,'Heebo')]
+ text(4,'ההיריון התחיל מיחסים\nבאחד הימים האלה.',940,270,51,ink,'Heebo'),
+ panel(5,(1080-w)/2+(344-228)*w/463,top+h/2,26*w/463,h,terra,.14),
+ panel(6,(1080-w)/2+(450-228)*w/463,top+h/2,26*w/463,h,terra,.14),
+ text(7,'מאיזה מהם לדעתך?',940,1440,46,ink,'Heebo')]
 stories.append(s)
 s=base(4,'אם את רוצה להימנע מהיריון',motion=1)
 s['interaction']=interaction('question','מה הכי מבלבל אותך לגבי הישרדות זרע והסיכוי להיריון?')
-s['interaction']['stickerArea']=dict(x=150,y=1420,width=780,height=220)
-s['elements']=[photo('stories/red-tent/assets/11624807.jpg',540,375,1080,750,100,'zoom'),
+s['interaction']['stickerArea']=dict(x=150,y=1260,width=780,height=220)
+s['elements']=[photo('stories/red-tent/assets/11624807.jpg',540,350,1080,700,100,'zoom'),
  text(2,'rona',940,150,54,ink,'Heebo'),text(3,'04 / 04',270,150,26),
- text(4,'רוצה להימנע\nמהיריון?',940,940,78,ink,'Heebo','fade',.1),
- text(5,'מה הכי מבלבל אותך לגבי\nהישרדות זרע והסיכוי להיריון?',940,1240,48,terra,'Heebo','slide',.45),
- text(6,'בפוסט של היום אני מסבירה\nכמה זמן זרע יכול לשרוד בגוף,\nובמה זה תלוי.',940,1725,36,ink,animation='fade',delay=.8)]
+ text(4,'רוצה להימנע\nמהיריון?',940,840,78,ink,'Heebo','fade',.1),
+ text(5,'מה הכי מבלבל אותך לגבי\nהישרדות זרע והסיכוי להיריון?',940,1110,48,terra,'Heebo','slide',.45),
+ text(6,'בפוסט של היום אני מסבירה\nכמה זמן זרע יכול לשרוד בגוף,\nובמה זה תלוי.',940,1575,36,ink,animation='fade',delay=.8)]
 stories.append(s)
 manifest=[]
 for i,s in enumerate(stories,1):
  (dest/'designs'/f'{i:02}.json').write_text(json.dumps(s,ensure_ascii=False,separators=(',',':')))
- manifest.append(dict(id=i,title=s['title'],design=f'designs/{i:02}.json',poster=f'exports/{i:02}.png',video=f'exports/{i:02}.mp4',animated=s['motion']>0,interaction=s['interaction']))
+ manifest.append(dict(id=i,title=s['title'],design=f'designs/{i:02}.json?v=raised',poster=f'exports/{i:02}.png?v=raised',video=f'exports/{i:02}.mp4?v=raised',animated=s['motion']>0,interaction=s['interaction']))
 (dest/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2))
 print('Built four approved short Stories with no URLs in exported text')

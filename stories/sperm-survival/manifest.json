@@ -2,9 +2,9 @@
   {
     "id": 1,
     "title": "גם כשיש ילד משותף",
-    "design": "designs/01.json",
-    "poster": "exports/01.png",
-    "video": "exports/01.mp4",
+    "design": "designs/01.json?v=raised",
+    "poster": "exports/01.png?v=raised",
+    "video": "exports/01.mp4?v=raised",
     "animated": true,
     "interaction": {
       "type": "poll",
@@ -16,7 +16,7 @@
       "nativeStickerRequired": true,
       "stickerArea": {
         "x": 150,
-        "y": 1550,
+        "y": 1420,
         "width": 780,
         "height": 250
       }
@@ -25,9 +25,9 @@
   {
     "id": 2,
     "title": "מה המחקר מצא",
-    "design": "designs/02.json",
-    "poster": "exports/02.png",
-    "video": "exports/02.mp4",
+    "design": "designs/02.json?v=raised",
+    "poster": "exports/02.png?v=raised",
+    "video": "exports/02.mp4?v=raised",
     "animated": false,
     "interaction": {
       "type": "poll",
@@ -39,7 +39,7 @@
       "nativeStickerRequired": true,
       "stickerArea": {
         "x": 150,
-        "y": 1540,
+        "y": 1410,
         "width": 780,
         "height": 250
       },
@@ -49,9 +49,9 @@
   {
     "id": 3,
     "title": "מה הטבלה מספרת",
-    "design": "designs/03.json",
-    "poster": "exports/03.png",
-    "video": "exports/03.mp4",
+    "design": "designs/03.json?v=raised",
+    "poster": "exports/03.png?v=raised",
+    "video": "exports/03.mp4?v=raised",
     "animated": false,
     "interaction": {
       "type": "poll",
@@ -64,7 +64,7 @@
       "nativeStickerRequired": true,
       "stickerArea": {
         "x": 150,
-        "y": 1590,
+        "y": 1500,
         "width": 780,
         "height": 240
       }
@@ -73,9 +73,9 @@
   {
     "id": 4,
     "title": "אם את רוצה להימנע מהיריון",
-    "design": "designs/04.json",
-    "poster": "exports/04.png",
-    "video": "exports/04.mp4",
+    "design": "designs/04.json?v=raised",
+    "poster": "exports/04.png?v=raised",
+    "video": "exports/04.mp4?v=raised",
     "animated": true,
     "interaction": {
       "type": "question",
@@ -84,7 +84,7 @@
       "nativeStickerRequired": true,
       "stickerArea": {
         "x": 150,
-        "y": 1420,
+        "y": 1260,
         "width": 780,
         "height": 220
       }

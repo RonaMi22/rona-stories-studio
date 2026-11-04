@@ -166,7 +166,7 @@ sync();prepare();thumbnails();
 // Add the approved personal series alongside the original nine designs.
 async function personalSeries(folder='red-tent',container='red-tent-series',className='series-design'){
  try{
-  const entries=await (await fetch('./stories/'+folder+'/manifest.json')).json();
+  const entries=await (await fetch('./stories/'+folder+'/manifest.json'+(folder==='sperm-survival'?'?v=raised':''))).json();
   for(const entry of entries){
    const original=await (await fetch('./stories/'+folder+'/'+entry.design)).json();if(!validStory(original))throw Error('Invalid series design');
    seriesOriginals.set(original.scene,structuredClone(original));
