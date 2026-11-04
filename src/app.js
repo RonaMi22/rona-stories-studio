@@ -1,6 +1,6 @@
 import {templates,createStory,validStory,migrateStory} from './model.js';
 import {render,prepareDesign,hitTest} from './render.js';
-import {restoreChartCaptions,removeChartHighlights} from './restore-chart-captions.js?v=clean-chart';
+import {restoreChartCaptions,removeChartHighlights} from './restore-chart-captions.js?v=full-chart-copy';
 const $=id=>document.getElementById(id),canvas=$('story'),ctx=canvas.getContext('2d');
 const fontsReady=Promise.all(['400 40px Assistant','700 40px Heebo'].map(f=>document.fonts.load(f,'אבג ABC')));
 let story=createStory(),selected=7,history=[],drag=null,playing=false,frame,loadVersion=0,assetsReady=false,exporting=false,cancelExport=false,photoUploadVersion=0;
@@ -87,7 +87,7 @@ $('reset').onclick=async()=>{
 $('retry-images').onclick=()=>prepare();
 $('restore-chart-captions').onclick=async()=>{
  const original=seriesOriginals.get(story.scene);if(!original||story.scene!=='sperm-survival-3')return;
- photoUploadVersion++;stop();checkpoint();story=restoreChartCaptions(story,original);selected=4;sync();persist();await prepare();
+ photoUploadVersion++;stop();checkpoint();story=restoreChartCaptions(story,original,{useOriginalText:true});selected=4;sync();persist();await prepare();
 };
 function photoTarget(){return selectedLayer()?.type==='photo'?selectedLayer():story.elements.find(e=>e.type==='photo');}
 $('select-photo').onclick=()=>{const e=photoTarget();if(e){selected=e.id;sync();}else add('photo');};
@@ -172,9 +172,9 @@ sync();prepare();thumbnails();
 // Add the approved personal series alongside the original nine designs.
 async function personalSeries(folder='red-tent',container='red-tent-series',className='series-design'){
  try{
-  const entries=await (await fetch('./stories/'+folder+'/manifest.json'+(folder==='sperm-survival'?'?v=clean-chart':''))).json();
+  const entries=await (await fetch('./stories/'+folder+'/manifest.json'+(folder==='sperm-survival'?'?v=full-chart-copy':''))).json();
   for(const entry of entries){
-   const original=await (await fetch('./stories/'+folder+'/'+entry.design+(folder==='sperm-survival'?(entry.design.includes('?')?'&':'?')+'v2=clean-chart':''))).json();if(!validStory(original))throw Error('Invalid series design');
+   const original=await (await fetch('./stories/'+folder+'/'+entry.design+(folder==='sperm-survival'?(entry.design.includes('?')?'&':'?')+'v2=full-chart-copy':''))).json();if(!validStory(original))throw Error('Invalid series design');
    seriesOriginals.set(original.scene,structuredClone(original));
    const button=document.createElement('button');button.className=className;button.dataset.scene=original.scene;button.setAttribute('aria-label',entry.title);
    const image=document.createElement('img');image.className='mini';image.src='./stories/'+folder+'/'+entry.poster;image.alt=entry.title;
@@ -183,8 +183,8 @@ async function personalSeries(folder='red-tent',container='red-tent-series',clas
     if(exporting)return;photoUploadVersion++;stop();checkpoint();persist();
     let saved;try{saved=JSON.parse(localStorage.getItem(draftKey(original.scene)));}catch{}
     story=validStory(saved)?saved:structuredClone(original);
-    if(story.scene==='sperm-survival-3'&&new URLSearchParams(location.search).get('repair')==='chart-captions'){
-     story=restoreChartCaptions(story,original);const url=new URL(location.href);url.searchParams.delete('repair');window.history.replaceState(null,'',url);
+    if(story.scene==='sperm-survival-3'&&['chart-captions','complete-chart-copy'].includes(new URLSearchParams(location.search).get('repair'))){
+     story=restoreChartCaptions(story,original,{useOriginalText:new URLSearchParams(location.search).get('repair')==='complete-chart-copy'});const url=new URL(location.href);url.searchParams.delete('repair');window.history.replaceState(null,'',url);
     }
     if(story.scene==='sperm-survival-3'&&new URLSearchParams(location.search).get('clearHighlights')==='1'){
      story=removeChartHighlights(story);const url=new URL(location.href);url.searchParams.delete('clearHighlights');window.history.replaceState(null,'',url);

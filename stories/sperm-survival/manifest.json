@@ -49,9 +49,9 @@
   {
     "id": 3,
     "title": "מה הטבלה מספרת",
-    "design": "designs/03.json?v=clean-chart",
-    "poster": "exports/03.png?v=clean-chart",
-    "video": "exports/03.mp4?v=clean-chart",
+    "design": "designs/03.json?v=full-chart-copy",
+    "poster": "exports/03.png?v=full-chart-copy",
+    "video": "exports/03.mp4?v=full-chart-copy",
     "animated": false,
     "interaction": {
       "type": "poll",

@@ -23,7 +23,7 @@ test('chart is a fixed sanitized raster without added highlight overlays',async(
  assert.equal(chart.readUInt32BE(16),463);assert.equal(chart.readUInt32BE(20),552);assert.deepEqual(Buffer.from(image.src.split(',')[1],'base64'),chart);
  assert.equal(image.animation,'none');assert.equal(story.motion,0);
  assert.equal(story.elements.filter(e=>e.type==='rect').length,0);
- assert.ok(story.interaction.options.includes('אי אפשר לדעת מהטבלה'));assert.ok(!('correctAnswer' in story.interaction));
+ const copy=story.elements.filter(e=>e.type==='text').map(e=>e.text).join(' ');for(const option of story.interaction.options)assert.ok(copy.includes(option));assert.ok(copy.includes('ההיריון התחיל מיחסים ביום 11'));assert.ok(story.interaction.options.includes('אי אפשר לדעת מהטבלה'));assert.ok(!('correctAnswer' in story.interaction));
 });
 
 test('captions and sticker areas leave room above Instagram bottom controls',async()=>{for(const id of ['01','02','03','04']){const story=await get(id);for(const e of story.elements.filter(e=>e.type==='text'&&e.id>3)){const bottom=e.y+(e.text.split('\n').length-1)*e.size*1.35/2+e.size*.55;assert.ok(bottom<=1650,`${id} layer ${e.id} too low`);}const area=story.interaction.stickerArea;assert.ok(area.y+area.height<=1750);}const research=await get('02');assert.ok(research.elements.some(e=>e.text==='אם תרצי שאשלח לך את המחקר,\nכתבי לי בפרטי.'));});
