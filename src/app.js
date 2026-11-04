@@ -1,5 +1,6 @@
 import {templates,createStory,validStory,migrateStory} from './model.js';
 import {render,prepareDesign,hitTest} from './render.js';
+import {restoreChartCaptions} from './restore-chart-captions.js';
 const $=id=>document.getElementById(id),canvas=$('story'),ctx=canvas.getContext('2d');
 const fontsReady=Promise.all(['400 40px Assistant','700 40px Heebo'].map(f=>document.fonts.load(f,'אבג ABC')));
 let story=createStory(),selected=7,history=[],drag=null,playing=false,frame,loadVersion=0,assetsReady=false,exporting=false,cancelExport=false,photoUploadVersion=0;
@@ -38,6 +39,7 @@ function sync(){
  }
  $('bg').value=story.bg;$('accent').value=story.accent;$('duration').value=story.duration;$('duration-value').value=story.duration+' שניות';$('motion').value=story.motion;
  $('undo').disabled=!history.length;$('design-name').textContent=story.title??'הסטורי שלי';
+ $('restore-chart-captions').hidden=story.scene!=='sperm-survival-3';
  $('interaction-guide').hidden=!story.interaction;if(story.interaction)$('interaction-copy').textContent=story.interaction.question+(story.interaction.options?.length?' · '+story.interaction.options.join(' / '):'');
  document.querySelectorAll('.template').forEach((b,i)=>b.classList.toggle('active',templates[i].scene===story.scene));document.querySelectorAll('.series-design, .sperm-design').forEach(b=>b.classList.toggle('active',b.dataset.scene===story.scene));draw();
 }
@@ -83,6 +85,10 @@ $('reset').onclick=async()=>{
  else choose(Math.max(0,templates.findIndex(t=>t.scene===story.scene)),true);
 };
 $('retry-images').onclick=()=>prepare();
+$('restore-chart-captions').onclick=async()=>{
+ const original=seriesOriginals.get(story.scene);if(!original||story.scene!=='sperm-survival-3')return;
+ photoUploadVersion++;stop();checkpoint();story=restoreChartCaptions(story,original);selected=4;sync();persist();await prepare();
+};
 function photoTarget(){return selectedLayer()?.type==='photo'?selectedLayer():story.elements.find(e=>e.type==='photo');}
 $('select-photo').onclick=()=>{const e=photoTarget();if(e){selected=e.id;sync();}else add('photo');};
 async function clearPhoto(){
@@ -166,9 +172,9 @@ sync();prepare();thumbnails();
 // Add the approved personal series alongside the original nine designs.
 async function personalSeries(folder='red-tent',container='red-tent-series',className='series-design'){
  try{
-  const entries=await (await fetch('./stories/'+folder+'/manifest.json'+(folder==='sperm-survival'?'?v=raised':''))).json();
+  const entries=await (await fetch('./stories/'+folder+'/manifest.json'+(folder==='sperm-survival'?'?v=caption-fix':''))).json();
   for(const entry of entries){
-   const original=await (await fetch('./stories/'+folder+'/'+entry.design)).json();if(!validStory(original))throw Error('Invalid series design');
+   const original=await (await fetch('./stories/'+folder+'/'+entry.design+(folder==='sperm-survival'?(entry.design.includes('?')?'&':'?')+'v2=caption-fix':''))).json();if(!validStory(original))throw Error('Invalid series design');
    seriesOriginals.set(original.scene,structuredClone(original));
    const button=document.createElement('button');button.className=className;button.dataset.scene=original.scene;button.setAttribute('aria-label',entry.title);
    const image=document.createElement('img');image.className='mini';image.src='./stories/'+folder+'/'+entry.poster;image.alt=entry.title;
@@ -176,7 +182,11 @@ async function personalSeries(folder='red-tent',container='red-tent-series',clas
    button.onclick=async()=>{
     if(exporting)return;photoUploadVersion++;stop();checkpoint();persist();
     let saved;try{saved=JSON.parse(localStorage.getItem(draftKey(original.scene)));}catch{}
-    story=validStory(saved)?saved:structuredClone(original);selected=story.elements.find(e=>e.type==='text')?.id;sync();persist();await prepare();
+    story=validStory(saved)?saved:structuredClone(original);
+    if(story.scene==='sperm-survival-3'&&new URLSearchParams(location.search).get('repair')==='chart-captions'){
+     story=restoreChartCaptions(story,original);const url=new URL(location.href);url.searchParams.delete('repair');window.history.replaceState(null,'',url);
+    }
+    selected=story.elements.find(e=>e.type==='text')?.id;sync();persist();await prepare();
    };$(container).append(button);sync();if(new URLSearchParams(location.search).get('story')===original.scene)button.click();
   }
  }catch{const notice=document.createElement('p');notice.textContent='הסדרה לא נטענה. אפשר לרענן את הדף ולנסות שוב.';$(container).append(notice);}

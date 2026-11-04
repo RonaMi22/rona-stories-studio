@@ -1,0 +1,21 @@
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const assert=require('node:assert/strict'),fs=require('node:fs/promises'),path=require('node:path'),{execFileSync}=require('node:child_process');
+(async()=>{
+ const browser=await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
+ const page=await browser.newPage({viewport:{width:390,height:844},acceptDownloads:true}),errors=[];page.on('pageerror',e=>errors.push(e.message));const base=process.env.TEST_URL||'http://127.0.0.1:3000';
+ const original=JSON.parse(await fs.readFile(path.resolve(__dirname,'../stories/sperm-survival/designs/03.json'),'utf8'));
+ const damaged=structuredClone(original);damaged.elements=damaged.elements.filter(e=>![2,3,4,7].includes(e.id));damaged.elements[0].focusX=35;
+ await page.goto(base);await page.evaluate(s=>{localStorage.setItem('rona-story',JSON.stringify(s));localStorage.setItem('rona-editorial-'+s.scene,JSON.stringify(s));},damaged);
+ await page.goto(base+'/?story=sperm-survival-3&repair=chart-captions&v=caption-fix');await page.waitForFunction(()=>!new URLSearchParams(location.search).has('repair')&&!document.querySelector('#export').disabled);
+ const get=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('rona-story')));
+ let fixed=await get();assert.deepEqual(fixed.elements.filter(e=>![4,7].includes(e.id)),damaged.elements);assert.equal(fixed.elements.find(e=>e.id===4).text,original.elements.find(e=>e.id===4).text);
+ const textPixels=await page.evaluate(()=>{const c=document.querySelector('#story').getContext('2d');return [[120,205,850,125],[120,1390,850,100]].map(([x,y,w,h])=>{const pixels=c.getImageData(x,y,w,h).data;let count=0;for(let i=0;i<pixels.length;i+=4)if(pixels[i]<120&&pixels[i+1]<120&&pixels[i+2]<120)count++;return count;});});assert.ok(textPixels.every(n=>n>1500),JSON.stringify(textPixels));
+ // A repaired draft persists and keeps newly edited captions on normal subsequent navigation.
+ await page.locator('#layers').selectOption('4');await page.locator('#text').fill('הכיתוב האישי שלי');await page.locator('.template').nth(0).click();await page.locator('.sperm-design').nth(2).click();await page.waitForFunction(()=>!document.querySelector('#export').disabled);assert.equal((await get()).elements.find(e=>e.id===4).text,'הכיתוב האישי שלי');
+ // Restore button also recovers hidden/off-canvas text and remains undoable.
+ await page.locator('#layers').selectOption('4');await page.locator('#opacity').fill('0');await page.locator('#restore-chart-captions').click();await page.waitForFunction(()=>!document.querySelector('#export').disabled);assert.equal((await get()).elements.find(e=>e.id===4).opacity,1);await page.locator('#undo').click();assert.equal((await get()).elements.find(e=>e.id===4).opacity,0);await page.locator('#restore-chart-captions').click();
+ const pngWait=page.waitForEvent('download');await page.locator('#export').click();const png=await fs.readFile(await(await pngWait).path());assert.equal(png.readUInt32BE(16),1080);assert.equal(png.readUInt32BE(20),1920);
+ await page.locator('#duration').fill('3');const videoWait=page.waitForEvent('download',{timeout:20000});await page.locator('#export-video').click();const videoPath=await(await videoWait).path();const meta=JSON.parse(execFileSync('ffprobe',['-v','error','-show_entries','stream=codec_name,width,height','-of','json',videoPath],{encoding:'utf8'}));assert.ok(meta.streams.some(e=>e.codec_name==='h264'&&e.width===1080&&e.height===1920));
+ const videoTextPixels=['crop=850:125:120:205,format=gray','crop=850:100:120:1390,format=gray'].map(filter=>{const frame=execFileSync('ffmpeg',['-v','error','-ss','0.5','-i',videoPath,'-vf',filter,'-frames:v','1','-f','rawvideo','-']);return frame.reduce((n,v)=>n+(v<120?1:0),0);});assert.ok(videoTextPixels.every(n=>n>1500),JSON.stringify(videoTextPixels));
+ assert.deepEqual(errors,[]);console.log(JSON.stringify({mobileSavedDraftRepair:true,bothCaptionsVisible:true,textPixels,videoTextPixels,chartUnchanged:true,deletedBrandingPreserved:true,customWordsPreserved:true,repairConsumedOnce:true,undo:true,png:true,mp4:true,errors}));await browser.close();
+})().catch(e=>{console.error(e);process.exit(1)});
