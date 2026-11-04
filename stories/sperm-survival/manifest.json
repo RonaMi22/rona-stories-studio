@@ -1,0 +1,93 @@
+[
+  {
+    "id": 1,
+    "title": "גם כשיש ילד משותף",
+    "design": "designs/01.json",
+    "poster": "exports/01.png",
+    "video": "exports/01.mp4",
+    "animated": true,
+    "interaction": {
+      "type": "poll",
+      "question": "היית חושבת לבדוק גם את הזרע?",
+      "options": [
+        "כן",
+        "לא בטוח"
+      ],
+      "nativeStickerRequired": true,
+      "stickerArea": {
+        "x": 150,
+        "y": 1550,
+        "width": 780,
+        "height": 250
+      }
+    }
+  },
+  {
+    "id": 2,
+    "title": "מה המחקר מצא",
+    "design": "designs/02.json",
+    "poster": "exports/02.png",
+    "video": "exports/02.mp4",
+    "animated": false,
+    "interaction": {
+      "type": "poll",
+      "question": "רוצה שאשלח לך את המחקר בפרטי?",
+      "options": [
+        "כן, אשמח",
+        "לא כרגע"
+      ],
+      "nativeStickerRequired": true,
+      "stickerArea": {
+        "x": 150,
+        "y": 1540,
+        "width": 780,
+        "height": 250
+      },
+      "fulfillment": "manual_dm"
+    }
+  },
+  {
+    "id": 3,
+    "title": "מה הטבלה מספרת",
+    "design": "designs/03.json",
+    "poster": "exports/03.png",
+    "video": "exports/03.mp4",
+    "animated": false,
+    "interaction": {
+      "type": "poll",
+      "question": "מאיזה מהם לדעתך?",
+      "options": [
+        "יום 11",
+        "יום 15",
+        "אי אפשר לדעת מהטבלה"
+      ],
+      "nativeStickerRequired": true,
+      "stickerArea": {
+        "x": 150,
+        "y": 1590,
+        "width": 780,
+        "height": 240
+      }
+    }
+  },
+  {
+    "id": 4,
+    "title": "אם את רוצה להימנע מהיריון",
+    "design": "designs/04.json",
+    "poster": "exports/04.png",
+    "video": "exports/04.mp4",
+    "animated": true,
+    "interaction": {
+      "type": "question",
+      "question": "מה הכי מבלבל אותך לגבי הישרדות זרע והסיכוי להיריון?",
+      "options": [],
+      "nativeStickerRequired": true,
+      "stickerArea": {
+        "x": 150,
+        "y": 1420,
+        "width": 780,
+        "height": 220
+      }
+    }
+  }
+]

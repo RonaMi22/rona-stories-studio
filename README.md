@@ -68,3 +68,11 @@ The four-story personal series is available under `stories/red-tent/index.html` 
 Stories 1 and 4 use gentle motion and editable entrance timing; stories 2 and 3 are static. PNG and Instagram-compatible MP4 exports are provided for all four. Polls and question prompts in exported artwork do not collect responses; add native Instagram stickers when posting.
 
 The generated JSON files contain real photographs and are editable in the existing editor. `scripts/build-red-tent-series.py` rebuilds the designs; with the development server running, `PLAYWRIGHT_MODULE=/tmp/rona-browser/node_modules/playwright node scripts/render-red-tent-series.cjs` renders and checks the finished exports. Rendering requires Chromium and FFmpeg. No runtime package dependency or external photo service is needed by the site.
+
+## Sperm survival and fertility series
+
+Four approved short Stories are available under `stories/sperm-survival/index.html`, with direct editing links and an additive collection inside the existing editor. No links, survival-duration answer, or generated medical-chart content appear in the exported artwork. Native Instagram sticker setup is documented for all four: three polls and an open question. Requests for the research are fulfilled manually in private messages.
+
+The user-supplied chart was losslessly cropped to remove calendar dates, cycle identifier, header and footer before saving. The original attachment is not included. Days 11 and 15 are highlighted by separate editable layers. The reported pregnancy context is user-provided and does not establish the exact ovulation date or which encounter led to pregnancy. Research scope, photography licensing and privacy handling are documented in `stories/sperm-survival/NOTES.md`.
+
+Rebuild with `python3 scripts/build-sperm-series.py`; render with `SERIES=sperm-survival PLAYWRIGHT_MODULE=/tmp/rona-browser/node_modules/playwright node scripts/render-red-tent-series.cjs`. `scripts/prepare-sperm-chart.cjs` accepts a local original attachment path and performs only fixed-coordinate, lossless pixel cropping after verifying dimensions. `scripts/verify-sperm-series.cjs` tests the new editor collection, timing controls, persistence, reset, native sticker guidance, mobile viewing, and all four media exports.

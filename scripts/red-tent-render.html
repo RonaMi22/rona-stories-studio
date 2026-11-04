@@ -1,6 +1,6 @@
 <!doctype html><html lang="he"><meta charset="utf-8"><link rel="stylesheet" href="../src/style.css"><style>html,body{margin:0;padding:0;width:1080px;height:1920px;overflow:hidden;background:#fff}canvas{width:1080px;height:1920px}</style><canvas width="1080" height="1920" id="render"></canvas><script type="module">
 import {render,prepareDesign} from '../src/render.js';
 import {validStory} from '../src/model.js';
-const id=new URLSearchParams(location.search).get('id')||'01';
-window.ready=(async()=>{const s=await(await fetch('../stories/red-tent/designs/'+id+'.json')).json();if(!validStory(s))throw Error('Invalid story');await Promise.all([prepareDesign(s),document.fonts.load('400 46px Assistant','נשים'),document.fonts.load('400 48px Heebo','נשים'),document.fonts.load('700 66px Heebo','נשים')]);window.design=s;window.draw=t=>render(document.querySelector('canvas').getContext('2d'),s,t);window.draw(null);})();
+const params=new URLSearchParams(location.search),id=params.get('id')||'01',series=params.get('series')==='sperm-survival'?'sperm-survival':'red-tent';
+window.ready=(async()=>{const s=await(await fetch('../stories/'+series+'/designs/'+id+'.json')).json();if(!validStory(s))throw Error('Invalid story');await Promise.all([prepareDesign(s),document.fonts.load('400 46px Assistant','נשים'),document.fonts.load('400 48px Heebo','נשים'),document.fonts.load('700 66px Heebo','נשים')]);window.design=s;window.draw=t=>render(document.querySelector('canvas').getContext('2d'),s,t);window.draw(null);})();
 </script></html>

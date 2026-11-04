@@ -38,7 +38,8 @@ function sync(){
  }
  $('bg').value=story.bg;$('accent').value=story.accent;$('duration').value=story.duration;$('duration-value').value=story.duration+' שניות';$('motion').value=story.motion;
  $('undo').disabled=!history.length;$('design-name').textContent=story.title??'הסטורי שלי';
- document.querySelectorAll('.template').forEach((b,i)=>b.classList.toggle('active',templates[i].scene===story.scene));document.querySelectorAll('.series-design').forEach(b=>b.classList.toggle('active',b.dataset.scene===story.scene));draw();
+ $('interaction-guide').hidden=!story.interaction;if(story.interaction)$('interaction-copy').textContent=story.interaction.question+(story.interaction.options?.length?' · '+story.interaction.options.join(' / '):'');
+ document.querySelectorAll('.template').forEach((b,i)=>b.classList.toggle('active',templates[i].scene===story.scene));document.querySelectorAll('.series-design, .sperm-design').forEach(b=>b.classList.toggle('active',b.dataset.scene===story.scene));draw();
 }
 function stop(){playing=false;cancelAnimationFrame(frame);$('play').textContent='▷ תצוגת אנימציה';$('play').setAttribute('aria-pressed','false');draw();}
 async function choose(index,reset=false){
@@ -78,7 +79,7 @@ $('undo').onclick=async()=>{if(!history.length)return;photoUploadVersion++;stop(
 $('reset').onclick=async()=>{
  if(seriesOriginals.has(story.scene)){
   photoUploadVersion++;stop();checkpoint();story=structuredClone(seriesOriginals.get(story.scene));selected=story.elements.find(e=>e.type==='text')?.id;sync();persist();await prepare();
- }else if(story.scene?.startsWith('red-tent-personal-'))toast('הסדרה עדיין נטענת. נסי שוב בעוד רגע.');
+ }else if((story.scene?.startsWith('red-tent-personal-')||story.scene?.startsWith('sperm-survival-')))toast('הסדרה עדיין נטענת. נסי שוב בעוד רגע.');
  else choose(Math.max(0,templates.findIndex(t=>t.scene===story.scene)),true);
 };
 $('retry-images').onclick=()=>prepare();
@@ -163,21 +164,23 @@ $('export-video').onclick=async()=>{
 sync();prepare();thumbnails();
 
 // Add the approved personal series alongside the original nine designs.
-async function personalSeries(){
+async function personalSeries(folder='red-tent',container='red-tent-series',className='series-design'){
  try{
-  const entries=await (await fetch('./stories/red-tent/manifest.json')).json();
+  const entries=await (await fetch('./stories/'+folder+'/manifest.json')).json();
   for(const entry of entries){
-   const original=await (await fetch('./stories/red-tent/'+entry.design)).json();if(!validStory(original))throw Error('Invalid series design');
+   const original=await (await fetch('./stories/'+folder+'/'+entry.design)).json();if(!validStory(original))throw Error('Invalid series design');
    seriesOriginals.set(original.scene,structuredClone(original));
-   const button=document.createElement('button');button.className='series-design';button.dataset.scene=original.scene;button.setAttribute('aria-label',entry.title);
-   const image=document.createElement('img');image.className='mini';image.src='./stories/red-tent/'+entry.poster;image.alt=entry.title;
+   const button=document.createElement('button');button.className=className;button.dataset.scene=original.scene;button.setAttribute('aria-label',entry.title);
+   const image=document.createElement('img');image.className='mini';image.src='./stories/'+folder+'/'+entry.poster;image.alt=entry.title;
    const label=document.createElement('strong');label.textContent=entry.id+'. '+entry.title;button.append(image,label);
    button.onclick=async()=>{
     if(exporting)return;photoUploadVersion++;stop();checkpoint();persist();
     let saved;try{saved=JSON.parse(localStorage.getItem(draftKey(original.scene)));}catch{}
     story=validStory(saved)?saved:structuredClone(original);selected=story.elements.find(e=>e.type==='text')?.id;sync();persist();await prepare();
-   };$('red-tent-series').append(button);sync();if(new URLSearchParams(location.search).get('story')===original.scene)button.click();
+   };$(container).append(button);sync();if(new URLSearchParams(location.search).get('story')===original.scene)button.click();
   }
- }catch{const notice=document.createElement('p');notice.textContent='הסדרה לא נטענה. אפשר לרענן את הדף ולנסות שוב.';$('red-tent-series').append(notice);}
+ }catch{const notice=document.createElement('p');notice.textContent='הסדרה לא נטענה. אפשר לרענן את הדף ולנסות שוב.';$(container).append(notice);}
 }
 personalSeries();
+
+personalSeries('sperm-survival','sperm-series','sperm-design');
