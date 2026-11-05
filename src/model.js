@@ -1,3 +1,4 @@
+import {illustrationLabels} from './illustrations.js';
 export const palette=['#A5093C','#FFE6BD','#3F3D32','#9BAF87'];
 const [red,cream,ink,sage]=palette;
 const copy=[
@@ -52,8 +53,9 @@ const color=v=>typeof v==='string'&&/^#[\da-f]{6}$/i.test(v);
 const number=(v,min,max)=>Number.isFinite(v)&&v>=min&&v<=max;
 export const safePhoto=src=>src===null||typeof src==='string'&&/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(src);
 export function validStory(s){
- if(!s||s.version!==3||!color(s.bg)||!color(s.accent)||!number(s.duration,3,15)||!number(s.motion,0,2)||!Array.isArray(s.elements)||s.elements.length>50||new Set(s.elements.map(e=>e?.id)).size!==s.elements.length)return false;
- return s.elements.every(e=>e&&Number.isFinite(e.id)&&['text','photo','rect'].includes(e.type)&&number(e.x,-2160,3240)&&number(e.y,-3840,5760)&&number(e.opacity,0,1)&&(e.delay===undefined||number(e.delay,0,15))&&(e.fadeDuration===undefined||number(e.fadeDuration,.1,5))&&['none','fade','slide','zoom','pan'].includes(e.animation)&&(e.type==='text'?typeof e.text==='string'&&e.text.length<=2000&&number(e.size,20,200)&&color(e.color)&&['Heebo','Assistant','serif','sans-serif'].includes(e.font)&&['center','left','right'].includes(e.align):number(e.width,2,3240)&&number(e.height,2,5760)&&(e.type==='rect'?color(e.color):safePhoto(e.src)&&typeof e.label==='string'&&e.label.length<=120&&number(e.zoom,1,3)&&number(e.focusX,0,100)&&number(e.focusY,0,100)&&number(e.tint,0,1)&&color(e.tintColor)&&typeof e.placeholderText==='string'&&e.placeholderText.length<=120&&color(e.placeholderColor)&&color(e.placeholderInk)&&number(e.placeholderY,0,1))));
+ if(s?.sound&&!(s.sound.kind==='soft-ticks'&&number(s.sound.volume,0,.1)&&Array.isArray(s.sound.times)&&s.sound.times.length<=20&&s.sound.times.every(t=>number(t,0,s.duration))))return false;
+ if(!s||s.version!==3||!color(s.bg)||!color(s.accent)||!number(s.duration,3,30)||!number(s.motion,0,2)||!Array.isArray(s.elements)||s.elements.length>50||new Set(s.elements.map(e=>e?.id)).size!==s.elements.length)return false;
+ return s.elements.every(e=>e&&Number.isFinite(e.id)&&['text','photo','rect','illustration'].includes(e.type)&&number(e.x,-2160,3240)&&number(e.y,-3840,5760)&&number(e.opacity,0,1)&&(e.delay===undefined||number(e.delay,0,30))&&(e.fadeDuration===undefined||number(e.fadeDuration,.1,5))&&['none','fade','slide','zoom','pan','float','roll','attenuate'].includes(e.animation)&&(e.type==='text'?typeof e.text==='string'&&e.text.length<=2000&&number(e.size,20,200)&&color(e.color)&&['Heebo','Assistant','serif','sans-serif'].includes(e.font)&&['center','left','right'].includes(e.align):number(e.width,2,3240)&&number(e.height,2,5760)&&(e.type==='rect'?color(e.color):e.type==='illustration'?Object.hasOwn(illustrationLabels,e.motif)&&color(e.color)&&color(e.accentColor):safePhoto(e.src)&&typeof e.label==='string'&&e.label.length<=120&&number(e.zoom,1,3)&&number(e.focusX,0,100)&&number(e.focusY,0,100)&&number(e.tint,0,1)&&color(e.tintColor)&&typeof e.placeholderText==='string'&&e.placeholderText.length<=120&&color(e.placeholderColor)&&color(e.placeholderInk)&&number(e.placeholderY,0,1))));
 }
 // Preserve words and uploaded photographs from the previous editor, never its illustrations.
 export function migrateStory(old){

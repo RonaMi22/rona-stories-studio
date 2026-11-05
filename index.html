@@ -10,7 +10,7 @@
 <main>
  <aside class="templates">
   <div class="eyebrow">THE EDITORIAL COLLECTION</div><h1>הגוף שלך.<br>הסיפור שלך.</h1><p>הסיפורים שלך, במקום אחד.<br>צילום, מילים ושיחות שחשובות לך.</p>
-  <div class="series-heading"><h3>זרע, פוריות ומה שביניהם · חדש</h3><a href="./stories/sperm-survival/index.html">צפייה בארבעת הסטוריז והורדה</a></div><div id="sperm-series" class="template-grid"></div>
+  <div class="series-heading"><h3>גלולות והסכמה מדעת · חדש</h3><a href="./stories/pills/index.html">צפייה בארבעת הסטוריז והורדה</a></div><div id="pills-series" class="template-grid"></div><div class="series-heading"><h3>זרע, פוריות ומה שביניהם</h3><a href="./stories/sperm-survival/index.html">צפייה בארבעת הסטוריז והורדה</a></div><div id="sperm-series" class="template-grid"></div>
   <div class="series-heading"><h3>האוהל האדום שלי</h3><a href="./stories/red-tent/index.html">צפייה בארבעת הסטוריז והורדה</a></div><div id="red-tent-series" class="template-grid"></div><div class="tabs"><b>העיצובים הקודמים</b></div><div id="templates" class="template-grid"></div>
   <div class="tip"><b>הצילום שלך. הקול שלך.</b><p>בחרי שכבה כדי לערוך אותה. אפשר להחליף כל תצלום, לשנות חיתוך, להזיז טקסט ולבחור תנועה עדינה.</p></div>
   <button id="reset" class="link">שחזור העיצוב המקורי · ניתן לביטול</button>
@@ -26,7 +26,7 @@
   <div class="eyebrow">MAKE IT YOURS</div><h2>הפרטים הקטנים</h2>
   <section><h3>שכבות העיצוב</h3>
    <label>שכבה פעילה<select id="layers"></select></label>
-   <div id="text-controls"><label>המילים שלך<textarea id="text" rows="4" maxlength="2000"></textarea></label>
+   <div id="illustration-controls" hidden><label>סוג איור<select id="motif"></select></label><label>צבע משלים באיור<input id="illustration-accent" type="color"></label></div><div id="text-controls"><label>המילים שלך<textarea id="text" rows="4" maxlength="2000"></textarea></label>
     <label>סגנון כתב<select id="font"><option value="Heebo">Heebo · כותרות</option><option value="Assistant">Assistant · טקסט</option><option value="serif">Serif</option><option value="sans-serif">Sans</option></select></label>
     <label>יישור<select id="align"><option value="right">ימין</option><option value="center">מרכז</option><option value="left">שמאל</option></select></label>
     <label class="range-label">גודל טקסט <output id="size-value"></output><input id="size" type="range" min="20" max="200"></label>
@@ -35,10 +35,10 @@
    <div class="row"><label>מיקום X<input id="x" type="number" min="-2160" max="3240"></label><label>מיקום Y<input id="y" type="number" min="-3840" max="5760"></label></div>
    <div id="frame-controls" class="row" hidden><label>רוחב<input id="width" type="number" min="2" max="3240"></label><label>גובה<input id="height" type="number" min="2" max="5760"></label></div>
    <label>שקיפות<input id="opacity" type="range" min="0" max="100"></label>
-   <label>תנועת השכבה<select id="animation"><option value="none">ללא</option><option value="fade">כניסה עדינה</option><option value="slide">עלייה עדינה</option><option value="zoom">התקרבות איטית · תצלום</option><option value="pan">תזוזה איטית · תצלום</option></select></label>
-   <div class="row"><label>השהיית כניסה בשניות<input id="animation-delay" type="number" min="0" max="15" step="0.1"></label><label>משך הכניסה בשניות<input id="animation-duration" type="number" min="0.1" max="5" step="0.1"></label></div><div class="row"><button id="backward">שכבה אחורה</button><button id="forward">שכבה קדימה</button></div>
+   <label>תנועת השכבה<select id="animation"><option value="none">ללא</option><option value="fade">כניסה עדינה</option><option value="slide">עלייה עדינה</option><option value="zoom">התקרבות איטית · תצלום</option><option value="pan">תזוזה איטית · תצלום</option><option value="float">ריחוף עדין · איור</option><option value="roll">גלגול · איור</option><option value="attenuate">היחלשות האות · איור</option></select></label>
+   <div class="row"><label>השהיית כניסה בשניות<input id="animation-delay" type="number" min="0" max="30" step="0.1"></label><label>משך הכניסה בשניות<input id="animation-duration" type="number" min="0.1" max="5" step="0.1"></label></div><div class="row"><button id="backward">שכבה אחורה</button><button id="forward">שכבה קדימה</button></div>
    <div class="row"><button id="add">＋ טקסט</button><button id="delete">מחיקת שכבה</button></div>
-   <div class="row"><button id="add-photo">＋ תצלום</button><button id="add-panel">＋ משטח צבע</button></div>
+   <div class="row"><button id="add-photo">＋ תצלום</button><button id="add-panel">＋ משטח צבע</button><button id="add-illustration">＋ איור</button></div>
   </section>
   <section><h3>התצלום שלך</h3><button id="select-photo">בחירת שכבת התצלום</button>
    <label class="upload" for="photo">↥ <b>החלפת התצלום בצילום שלך</b><small>JPG, PNG, WEBP · עד 10MB</small></label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp" hidden>
@@ -55,9 +55,9 @@
   </section>
   <section><h3>צבעי הסיפור</h3><div class="row"><label>רקע<input id="bg" type="color"></label><label>צבע מוביל<input id="accent" type="color"></label></div><div class="swatches" aria-label="צבעי המותג"><span style="background:#A5093C"></span><span style="background:#FFE6BD"></span><span style="background:#3F3D32"></span><span style="background:#9BAF87"></span></div></section>
   <section><h3>תנועה וייצוא</h3>
-   <label class="range-label">אורך הסטורי <output id="duration-value"></output><input id="duration" type="range" min="3" max="15" step="1"></label>
+   <label class="range-label">אורך הסטורי <output id="duration-value"></output><input id="duration" type="range" min="3" max="30" step="1"></label>
    <label>עוצמת התנועה<input id="motion" type="range" min="0" max="2" step="0.1"></label>
-   <label>פורמט וידאו<select id="video-format"><option value="mp4">MP4 · Instagram</option><option value="webm">WebM</option></select></label>
+   <label><input id="sound-enabled" type="checkbox"> נקישות עדינות</label><label>עוצמת הצליל<input id="sound-volume" type="range" min="0" max="0.1" step="0.001"></label><label>פורמט וידאו<select id="video-format"><option value="mp4">MP4 · Instagram</option><option value="webm">WebM</option></select></label>
    <button id="export-video" class="primary" disabled>הורדת וידאו מונפש ↓</button><p id="video-note" class="export-note"></p>
   </section>
   <button id="restore-chart-captions" hidden>החזרת כל הכיתוב של סטורי 3</button><section id="interaction-guide" hidden><h3>המדבקה להוספה באינסטגרם</h3><p id="interaction-copy"></p><p class="export-note">כדי לאסוף תשובות, הוסיפי את הסקר או תיבת השאלה באינסטגרם לאחר ההעלאה. הבקשות למחקר נענות ידנית בפרטי.</p></section><section><h3>קובץ העריכה שלך</h3><button id="save-design">שמירת קובץ עריכה</button><label class="upload" for="load-design">פתיחת קובץ עריכה</label><input id="load-design" type="file" accept="application/json,.json" hidden></section>
@@ -66,5 +66,5 @@
 </main>
 <div id="toast" role="status"></div>
 <div id="export-progress" class="export-progress" hidden><div><p id="export-status" role="status">מכינה את הווידאו…</p><button id="cancel-export">ביטול הייצוא</button></div></div>
-<script type="module" src="./src/app.js?v=visible-heading"></script>
+<script type="module" src="./src/app.js?v=pills-series"></script>
 </body></html>

@@ -1,0 +1,79 @@
+[
+  {
+    "id": 1,
+    "title": "מי כאן לקחה גלולות?",
+    "design": "designs/01.json",
+    "poster": "exports/01.png",
+    "video": "exports/01.mp4",
+    "animated": true,
+    "interaction": {
+      "type": "poll",
+      "question": "מה הניסיון שלך עם גלולות?",
+      "options": [
+        "לוקחת היום",
+        "לקחתי בעבר",
+        "מעולם לא לקחתי",
+        "שוקלת לקחת"
+      ],
+      "nativeStickerRequired": true,
+      "stickerArea": {
+        "x": 150,
+        "y": 1420,
+        "width": 780,
+        "height": 300
+      }
+    }
+  },
+  {
+    "id": 2,
+    "title": "גלולות ואכילה רגשית",
+    "design": "designs/02.json",
+    "poster": "exports/02.png",
+    "video": "exports/02.mp4",
+    "animated": true,
+    "interaction": {
+      "type": "poll",
+      "question": "הרגשת שינוי בתיאבון או באכילה עם גלולות?",
+      "options": [
+        "כן!",
+        "לא שמתי לב"
+      ],
+      "nativeStickerRequired": true,
+      "stickerArea": {
+        "x": 150,
+        "y": 1490,
+        "width": 780,
+        "height": 225
+      }
+    }
+  },
+  {
+    "id": 3,
+    "title": "מה הגלולות עושות למחזור?",
+    "design": "designs/03.json",
+    "poster": "exports/03.png",
+    "video": "exports/03.mp4",
+    "animated": true,
+    "interaction": null
+  },
+  {
+    "id": 4,
+    "title": "אני בעד לדעת",
+    "design": "designs/04.json",
+    "poster": "exports/04.png",
+    "video": "exports/04.mp4",
+    "animated": true,
+    "interaction": {
+      "type": "question",
+      "question": "מה היית רוצה שיסבירו לך לפני שנתנו לך גלולות?",
+      "options": [],
+      "nativeStickerRequired": true,
+      "stickerArea": {
+        "x": 150,
+        "y": 1380,
+        "width": 780,
+        "height": 245
+      }
+    }
+  }
+]

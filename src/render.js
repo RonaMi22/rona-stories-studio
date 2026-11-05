@@ -1,3 +1,4 @@
+import {drawIllustration} from './illustrations.js';
 const imageCache=new Map();
 export const font=e=>`${e.font==='Heebo'?'700':'400'} ${e.size}px ${['Heebo','Assistant'].includes(e.font)?e.font:e.font==='serif'?'Georgia, serif':'Arial, sans-serif'}`;
 export function loadImage(src){
@@ -13,7 +14,7 @@ export function render(ctx,design,time=null){
  ctx.save();ctx.globalAlpha=e.opacity;
  const start=e.delay===undefined?i*45:e.delay*1000,fade=(e.fadeDuration??.7)*1000;
  const entrance=time===null?1:Math.min(1,Math.max(0,(time-start)/fade));
- if(time!==null&&motion>0){
+ if(time!==null&&motion>0&&!(design.lockInteractiveText&&e.type==='text')){
   if(e.animation==='fade'||e.animation==='slide')ctx.globalAlpha*=entrance;
   if(e.animation==='slide')ctx.translate(0,(1-entrance)*30*motion);
  }
@@ -22,6 +23,13 @@ export function render(ctx,design,time=null){
   e.text.split('\n').forEach((line,i,lines)=>ctx.fillText(line,e.x,e.y+(i-(lines.length-1)/2)*e.size*1.35));
  }else if(e.type==='rect'){
   ctx.fillStyle=e.color;ctx.fillRect(e.x-e.width/2,e.y-e.height/2,e.width,e.height);
+ }else if(e.type==='illustration'){
+  if(time!==null&&motion>0){
+   if(e.animation==='float')ctx.translate(0,Math.sin(time/1500)*8*motion);
+   if(e.animation==='roll'){ctx.translate(e.x,e.y);ctx.translate(progress*55*motion,progress*24*motion);ctx.rotate(progress*Math.PI*1.5*motion);ctx.translate(-e.x,-e.y);}
+   if(e.animation==='attenuate')ctx.globalAlpha*=1-progress*.65*motion;
+  }
+  drawIllustration(ctx,e);
  }else{
   const img=e.src?readyImages.get(e.src):null;
   if(img){
