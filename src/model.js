@@ -59,7 +59,15 @@ export function validStory(s){
 }
 // Preserve words and uploaded photographs from the previous editor, never its illustrations.
 export function migrateStory(old){
- if(validStory(old))return structuredClone(old);
+ if(validStory(old)){
+  const next=structuredClone(old);
+  if(['pills-informed-1','pills-informed-2'].includes(next.scene)&&(next.pillContrastVersion??0)<1){
+   for(const e of next.elements)if(e.type==='illustration'&&e.motif==='pill'&&e.animation==='roll'&&e.color.toUpperCase()==='#A5093C'&&e.accentColor.toUpperCase()==='#FFE6BD')e.accentColor='#3F3D32';
+   next.pillContrastVersion=1;
+  }
+  return next;
+ }
+
  // Upgrade earlier photo drafts without requesting missing stock assets.
  if(old?.version===3&&Array.isArray(old.elements)){
   const upgraded=structuredClone(old),defaults=photograph(0,540,960,1080,1920);

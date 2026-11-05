@@ -10,6 +10,7 @@
   "duration": 24,
   "motion": 1,
   "lockInteractiveText": true,
+  "pillContrastVersion": 1,
   "elements": [
     {
       "id": 1,

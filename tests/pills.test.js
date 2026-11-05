@@ -22,3 +22,12 @@ test('illustration and sound imports reject invalid motifs, volume, timing and d
   const s=structuredClone(designs[1]);mutate(s);assert.equal(validStory(s),false);
  }
 });
+test('old cream rolling pills gain contrast without changing words, position or customized colors',()=>{
+ for(const design of designs.slice(0,2)){
+  const old=structuredClone(design);delete old.pillContrastVersion;
+  const pill=old.elements.find(e=>e.motif==='pill'&&e.animation==='roll');pill.accentColor='#FFE6BD';
+  const expected=structuredClone(old);expected.pillContrastVersion=1;expected.elements.find(e=>e.id===pill.id).accentColor='#3F3D32';
+  assert.deepEqual(migrateStory(old),expected);assert.equal(pill.accentColor,'#FFE6BD');
+  pill.accentColor='#9BAF87';assert.equal(migrateStory(old).elements.find(e=>e.id===pill.id).accentColor,'#9BAF87');
+ }
+});

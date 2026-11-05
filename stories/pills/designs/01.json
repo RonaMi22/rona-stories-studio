@@ -10,6 +10,7 @@
   "duration": 16,
   "motion": 1,
   "lockInteractiveText": true,
+  "pillContrastVersion": 1,
   "elements": [
     {
       "id": 1,
@@ -37,7 +38,7 @@
       "width": 74,
       "height": 74,
       "color": "#A5093C",
-      "accentColor": "#FFE6BD",
+      "accentColor": "#3F3D32",
       "opacity": 1,
       "animation": "roll",
       "delay": 0,

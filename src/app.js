@@ -1,7 +1,7 @@
-import {illustrationLabels} from './illustrations.js?v=pills-series';
-import {createStoryAudio} from './story-audio.js?v=pills-series';
-import {templates,createStory,validStory,migrateStory} from './model.js?v=pills-series';
-import {render,prepareDesign,hitTest} from './render.js?v=pills-series';
+import {illustrationLabels} from './illustrations.js?v=pill-contrast';
+import {createStoryAudio} from './story-audio.js?v=pill-contrast';
+import {templates,createStory,validStory,migrateStory} from './model.js?v=pill-contrast';
+import {render,prepareDesign,hitTest} from './render.js?v=pill-contrast';
 import {restoreChartCaptions,removeChartHighlights,upgradeChartCaptionDraft} from './restore-chart-captions.js?v=visible-heading';
 const $=id=>document.getElementById(id),canvas=$('story'),ctx=canvas.getContext('2d');
 const fontsReady=Promise.all(['400 40px Assistant','700 40px Heebo'].map(f=>document.fonts.load(f,'אבג ABC')));
@@ -184,7 +184,7 @@ async function personalSeries(folder='red-tent',container='red-tent-series',clas
  try{
   const entries=await (await fetch('./stories/'+folder+'/manifest.json'+(folder==='sperm-survival'?'?v=visible-heading':''))).json();
   for(const entry of entries){
-   const original=await (await fetch('./stories/'+folder+'/'+entry.design+(folder==='sperm-survival'?(entry.design.includes('?')?'&':'?')+'v2=visible-heading':''))).json();if(!validStory(original))throw Error('Invalid series design');
+   const original=await (await fetch('./stories/'+folder+'/'+entry.design+(folder==='sperm-survival'?(entry.design.includes('?')?'&':'?')+'v2=visible-heading':folder==='pills'?'?v=pill-contrast':''))).json();if(!validStory(original))throw Error('Invalid series design');
    seriesOriginals.set(original.scene,structuredClone(original));
    if(story.scene===original.scene&&(story.chartCopyVersion??0)<(original.chartCopyVersion??0)){
     story=upgradeChartCaptionDraft(story,original);sync();persist();await prepare();
@@ -195,7 +195,7 @@ async function personalSeries(folder='red-tent',container='red-tent-series',clas
    button.onclick=async()=>{
     if(exporting)return;photoUploadVersion++;stop();checkpoint();persist();
     let saved;try{saved=JSON.parse(localStorage.getItem(draftKey(original.scene)));}catch{}
-    story=upgradeChartCaptionDraft(validStory(saved)?saved:structuredClone(original),original);
+    story=upgradeChartCaptionDraft(validStory(saved)?migrateStory(saved):structuredClone(original),original);
     if(story.scene==='sperm-survival-3'&&['chart-captions','complete-chart-copy'].includes(new URLSearchParams(location.search).get('repair'))){
      story=restoreChartCaptions(story,original,{useOriginalText:new URLSearchParams(location.search).get('repair')==='complete-chart-copy'});const url=new URL(location.href);url.searchParams.delete('repair');window.history.replaceState(null,'',url);
     }
