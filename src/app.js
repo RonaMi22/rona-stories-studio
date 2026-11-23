@@ -89,7 +89,7 @@ $('undo').onclick=async()=>{if(!history.length)return;photoUploadVersion++;stop(
 $('reset').onclick=async()=>{
  if(seriesOriginals.has(story.scene)){
   photoUploadVersion++;stop();checkpoint();story=structuredClone(seriesOriginals.get(story.scene));selected=story.elements.find(e=>e.type==='text')?.id;sync();persist();await prepare();
- }else if((story.scene?.startsWith('red-tent-personal-')||story.scene?.startsWith('sperm-survival-')||story.scene?.startsWith('pills-informed-')))toast('הסדרה עדיין נטענת. נסי שוב בעוד רגע.');
+ }else if((story.scene?.startsWith('red-tent-personal-')||story.scene?.startsWith('sperm-survival-')||story.scene?.startsWith('pills-informed-')||story.scene?.startsWith('fertility-awareness-')))toast('הסדרה עדיין נטענת. נסי שוב בעוד רגע.');
  else choose(Math.max(0,templates.findIndex(t=>t.scene===story.scene)),true);
 };
 $('retry-images').onclick=()=>prepare();
@@ -213,3 +213,5 @@ personalSeries('sperm-survival','sperm-series','sperm-design');
 
 for(const id of ['sound-enabled','sound-volume'])$(id).oninput=()=>{stop();checkpoint();if($('sound-enabled').checked)story.sound={kind:'soft-ticks',volume:Number($('sound-volume').value),times:story.sound?.times??[.8,1.8]};else delete story.sound;persist();updateExportButtons();};
 personalSeries('pills','pills-series','pills-design');
+
+personalSeries('fertility-awareness','fertility-awareness-series');

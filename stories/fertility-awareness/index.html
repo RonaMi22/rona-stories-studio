@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ליווי מודעות לפוריות · תצוגה מקדימה</title>
+<link rel="stylesheet" href="../../src/style.css">
+<style>
+  body { background: #f8f3eb; color: #3f3d32; padding: clamp(22px, 5vw, 72px); }
+  h1 { color: #a5093c; font: 700 clamp(24px, 4vw, 48px) Heebo, sans-serif; margin: 0 0 28px; }
+  .gallery { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: clamp(10px, 2.4vw, 32px); max-width: 1240px; }
+  @media (max-width: 650px) { .gallery { grid-template-columns: 1fr; max-width: 420px; } }
+  figure { margin: 0; }
+  canvas { display: block; width: 100%; height: auto; }
+  figcaption { display: flex; gap: 10px; margin: 12px 0 24px; font: 400 18px Assistant, sans-serif; }
+  figcaption a { color: #a5093c; }
+</style>
+</head>
+<body>
+<h1>ליווי מודעות לפוריות</h1>
+<main class="gallery" aria-label="שלושת הסטוריז לתצוגה מקדימה"></main>
+<p id="status" role="status"></p>
+<script type="module">
+import { font, prepareDesign, render } from '../../src/render.js';
+import { validStory } from '../../src/model.js';
+
+async function readJson(path) {
+  const response = await fetch(path);
+  if (!response.ok) throw new Error(path);
+  return response.json();
+}
+
+async function preview() {
+  const entries = await readJson('./manifest.json');
+  const stories = await Promise.all(entries.map(entry => readJson(entry.design)));
+  await Promise.all(stories.map(async story => {
+    if (!validStory(story)) throw new Error(story.scene);
+    const textLayers = story.elements.filter(layer => layer.type === 'text');
+    await Promise.all([
+      prepareDesign(story),
+      ...textLayers.map(layer => document.fonts.load(font(layer), layer.text)),
+    ]);
+  }));
+  const gallery = document.querySelector('.gallery');
+  stories.forEach((story, index) => {
+    const figure = document.createElement('figure');
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    canvas.setAttribute('role', 'img');
+    canvas.setAttribute('aria-label', story.elements.filter(layer => layer.type === 'text').map(layer => layer.text).join(' '));
+    render(canvas.getContext('2d'), story);
+    const caption = document.createElement('figcaption');
+    const edit = document.createElement('a');
+    edit.href = '../../?story=' + encodeURIComponent(story.scene);
+    edit.textContent = 'פתיחה בעורך';
+    const download = document.createElement('a');
+    download.href = entries[index].design;
+    download.download = 'rona-' + story.scene + '.json';
+    download.textContent = 'קובץ עריכה';
+    caption.append(edit, download);
+    figure.append(canvas, caption);
+    gallery.append(figure);
+  });
+  if (stories[0].elements.some(layer => layer.type === 'photo' && !layer.src)) {
+    document.querySelector('#status').textContent = 'הסטורי הראשון ממתין לקובץ הפורטרט המקורי.';
+  }
+}
+window.campaignReady = preview();
+window.campaignReady.catch(error => {
+  document.querySelector('#status').textContent = 'טעינת התצוגה המקדימה נכשלה.';
+  console.error(error);
+});
+</script>
+</body>
+</html>

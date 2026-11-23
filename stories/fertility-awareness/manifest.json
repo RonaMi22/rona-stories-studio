@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "title": "ומה איתך?",
+    "design": "designs/01.json",
+    "poster": "previews/01.png",
+    "animated": false,
+    "interaction": {
+      "type": "question",
+      "question": "חוץ מיעילות, מה הכי חשוב לך בבחירת אמצעי מניעה?",
+      "nativeStickerRequired": true
+    }
+  },
+  {
+    "id": 2,
+    "title": "50 מחקרים",
+    "design": "designs/02.json",
+    "poster": "previews/02.png",
+    "animated": false,
+    "interaction": null
+  },
+  {
+    "id": 3,
+    "title": "ליווי מודעות לפוריות",
+    "design": "designs/03.json",
+    "poster": "previews/03.png",
+    "animated": false,
+    "interaction": {
+      "type": "link",
+      "question": "רוצה לשמוע פרטים?",
+      "nativeStickerRequired": true
+    }
+  }
+]
