@@ -1,0 +1,10 @@
+[
+  {
+    "id": 2,
+    "title": "מה שהיה חסר לי בגיל 16",
+    "design": "designs/02.json",
+    "poster": "exports/02.png",
+    "animated": false,
+    "interaction": null
+  }
+]
