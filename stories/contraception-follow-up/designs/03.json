@@ -1,0 +1,96 @@
+{
+  "version": 3,
+  "title": "ליווי מודעות לפוריות",
+  "scene": "contraception-follow-up-3",
+  "bg": "#A5093C",
+  "accent": "#FFE6BD",
+  "photo": null,
+  "overlay": 0,
+  "duration": 15,
+  "motion": 0,
+  "elements": [
+    {
+      "id": 1,
+      "type": "text",
+      "text": "אחת הסיבות שאני מלמדת מודעות לפוריות\nהיא הרצון לתת לנשים ידע שלא תמיד קיבלו.",
+      "x": 958,
+      "y": 335,
+      "size": 46,
+      "color": "#FFE6BD",
+      "font": "Heebo",
+      "align": "right",
+      "opacity": 1,
+      "animation": "none"
+    },
+    {
+      "id": 2,
+      "type": "text",
+      "text": "להכיר את המחזור שלהן.\nלהבין מתי הן פוריות ומתי לא.\nולדעת שיש גם אפשרות למנוע\nהיריון בלי הורמונים.",
+      "x": 958,
+      "y": 608,
+      "size": 49,
+      "color": "#FFE6BD",
+      "font": "Heebo",
+      "align": "right",
+      "opacity": 1,
+      "animation": "none"
+    },
+    {
+      "id": 3,
+      "type": "text",
+      "text": "לא כי זו הבחירה הנכונה לכולן.",
+      "x": 958,
+      "y": 840,
+      "size": 45,
+      "color": "#FFE6BD",
+      "font": "Heebo",
+      "align": "right",
+      "opacity": 1,
+      "animation": "none"
+    },
+    {
+      "id": 4,
+      "type": "text",
+      "text": "אלא כי לכל אחת מגיע\nלהכיר את האפשרויות שלה.",
+      "x": 958,
+      "y": 1015,
+      "size": 72,
+      "color": "#FFE6BD",
+      "font": "Heebo",
+      "align": "right",
+      "opacity": 1,
+      "animation": "none"
+    },
+    {
+      "id": 5,
+      "type": "text",
+      "text": "בפברואר נפתח ליווי מודעות לפוריות\nבקבוצה קטנה, עם לימוד מעמיק\nוליווי אישי.",
+      "x": 958,
+      "y": 1270,
+      "size": 50,
+      "color": "#FFE6BD",
+      "font": "Heebo",
+      "align": "right",
+      "opacity": 1,
+      "animation": "none"
+    },
+    {
+      "id": 6,
+      "type": "text",
+      "text": "לפרטים נוספים",
+      "x": 958,
+      "y": 1475,
+      "size": 51,
+      "color": "#FFE6BD",
+      "font": "Heebo",
+      "align": "right",
+      "opacity": 1,
+      "animation": "none"
+    }
+  ],
+  "interaction": {
+    "type": "link",
+    "question": "לפרטים נוספים",
+    "nativeStickerRequired": true
+  }
+}

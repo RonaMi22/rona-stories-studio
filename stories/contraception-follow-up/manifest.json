@@ -1,10 +1,30 @@
 [
   {
+    "id": 1,
+    "title": "מה חשוב בבחירת אמצעי מניעה",
+    "design": "designs/01.json",
+    "poster": "exports/01.png",
+    "animated": false,
+    "interaction": null
+  },
+  {
     "id": 2,
     "title": "מה שהיה חסר לי בגיל 16",
     "design": "designs/02.json",
     "poster": "exports/02.png",
     "animated": false,
     "interaction": null
+  },
+  {
+    "id": 3,
+    "title": "ליווי מודעות לפוריות",
+    "design": "designs/03.json",
+    "poster": "exports/03.png",
+    "animated": false,
+    "interaction": {
+      "type": "link",
+      "question": "לפרטים נוספים",
+      "nativeStickerRequired": true
+    }
   }
 ]
